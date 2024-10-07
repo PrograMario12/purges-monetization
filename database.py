@@ -60,6 +60,22 @@ class DataBase:
             print(f"Error inserting data: {error}")
             return False
 
+    def execute_query(self, query):
+        ''' Execute a query to the database'''
+        if not self.connection:
+            print("No connection to the database")
+            return False
+
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query)
+                result = cursor.fetchall()
+                self.connection.commit()
+                return result
+        except (psycopg2.Error, psycopg2.DatabaseError) as error:
+            print(f"Error executing query: {error}")
+            return False
+
 # Example of use
 if __name__ == "__main__":
     database = DataBase()
