@@ -2,78 +2,70 @@
 
 import psycopg2
 from psycopg2 import sql
-import credentials 
+import credentials
 
-def create_connection():
-    ''' Create a connection to the database'''
-    try:
-        # Configura los parámetros de conexión
-        # connection = psycopg2.connect(
-        #     database= '10.98.16.70',
-        #     user= 'developer',
-        #     password= 'd3v3l0p3r!',
-        #     host= 5432,
-        #     port= 
-        # )
-        connection = psycopg2.connect(
-            database= credentials.DATABASE_NAME,
-            user= credentials.DATABASE_USER,
-            password= credentials.DATABASE_PASSWORD,
-            host= credentials.DATABASE_HOST,
-            port= credentials.DATABASE_PORT
-        )
+class DataBase:
+    ''' Class for connecting to and manipulating a PostgreSQL
+    database'''
 
-        print("Successful connection to the database")
-        return connection
-    except psycopg2.Error as error:
-        print(f"""Error connecting to the database:
-              {error.pgcode} - {error.pgerror}""")
-    except UnicodeDecodeError as error:
-        print(f"Encoding error: {error}")
-    except psycopg2.OperationalError as error:
-        print(f"Operational error: {error}")
-    except psycopg2.DatabaseError as error:
-        print(f"Database error: {error}")
+    def __init__(self):
+        ''' Initialize the class'''
+        self.connection = None
 
-    return None
+    def create_connection(self):
+        ''' Create a connection to the database'''
+        try:
+            self.connection = psycopg2.connect(
+                database=credentials.DATABASE_NAME,
+                user=credentials.DATABASE_USER,
+                password=credentials.DATABASE_PASSWORD,
+                host=credentials.DATABASE_HOST,
+                port=credentials.DATABASE_PORT
+            )
+            print("Successful connection to the database")
+        except (
+            psycopg2.Error,
+            UnicodeDecodeError,
+            psycopg2.OperationalError,
+            psycopg2.DatabaseError
+            ) as error:
+            print(f"Error connecting to the database: {error}")
+            self.connection = None
 
-def insert_data(connection, table, columns, values):
-    ''' Insert data into a table'''
-    try:
-        cursor = connection.cursor()
-        insert_query = sql.SQL("""INSERT INTO {} (
-            {}) VALUES ({})""").format(
-            sql.Identifier(table),
-            sql.SQL(', ').join(map(sql.Identifier, columns)),
-            sql.SQL(', ').join(map(sql.Literal, values))
-        )
-    except psycopg2.Error as error:
-        print(f"Error creating the query: {error}")
-        return None
-    except psycopg2.DatabaseError as error:
-        print(f"Database error: {error}")
-        return None
+    def close_connection(self):
+        ''' Close the connection to the database'''
+        if self.connection:
+            self.connection.close()
+            print("Connection closed")
 
-    try:
-        cursor.execute(insert_query)
-        connection.commit()
-        print("Data inserted successfully.")
-    except psycopg2.Error as error:
-        print(f"Error inserting data: {error}")
-        return None
-    except psycopg2.DatabaseError as error:
-        print(f"Database error: {error}")
-        return None
-    finally:
-        cursor.close()
+    def insert_data(self, table, columns, values):
+        ''' Insert data into a table'''
+        if not self.connection:
+            print("No connection to the database")
+            return False
 
-    return True
+        try:
+            with self.connection.cursor() as cursor:
+                insert_query = sql.SQL("""INSERT INTO {} ({})
+                                       VALUES ({})""").format(
+                    sql.Identifier(table),
+                    sql.SQL(', ').join(map(sql.Identifier, columns)),
+                    sql.SQL(', ').join(map(sql.Literal, values))
+                )
+                cursor.execute(insert_query)
+                self.connection.commit()
+                print("Data inserted successfully.")
+                return True
+        except (psycopg2.Error, psycopg2.DatabaseError) as error:
+            print(f"Error inserting data: {error}")
+            return False
 
 # Example of use
 if __name__ == "__main__":
-    conn = create_connection()
-    if conn:
-        # Ejemplo de inserción de datos
-        # insert_data(conn, 'mi_tabla', ['columna1', 'columna2'],
+    database = DataBase()
+    database.create_connection()
+    if database.connection:
+        # Example of data insertion
+        # database.insert_data('mi_tabla', ['columna1', 'columna2'],
         # ['valor1', 'valor2'])
-        conn.close()
+        database.close_connection()
