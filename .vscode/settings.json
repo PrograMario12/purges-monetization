@@ -1,0 +1,16 @@
+{
+    "cSpell.words": [
+        "fillna",
+        "iterrows",
+        "latin",
+        "pady",
+        "pgerror",
+        "psycopg",
+        "pyzbar"
+    ],
+    "cSpell.language": "en,es-ES,es",
+    "editor.codeActionsOnSave": {},
+    "editor.rulers": [
+        79, 72
+    ]
+}
