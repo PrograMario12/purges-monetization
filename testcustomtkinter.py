@@ -7,7 +7,9 @@ customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "gre
 
 
 class App(customtkinter.CTk):
+    ''' Main application window. '''
     def __init__(self):
+        ''' Initialize the App class '''
         super().__init__()
 
         # configure window

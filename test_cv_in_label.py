@@ -1,10 +1,14 @@
+''' This script shows how to display a video stream from OpenCV in a
+Tkinter label. '''
 import tkinter as tk
 from tkinter import ttk
+import datetime
+import threading
 from PIL import Image, ImageTk
 import cv2
 import scanner
 import queries
-import threading
+
 
 class Interface:
     ''' This class creates the graphical user interface of the application. '''
@@ -44,6 +48,7 @@ class Interface:
 
     def create_widgets(self):
         ''' Create and pack the widgets '''
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
 
         ### Definition of widgets
         ## Definition principal panels
@@ -60,8 +65,8 @@ class Interface:
 
         # Distribution of the frames
         top_panel.grid(row=0, column=0, columnspan=2, sticky="nsew")
-        left_panel.grid(row=1, column=0, sticky="n")
-        right_panel.grid(row=1, column=1, sticky="n")
+        left_panel.grid(row=1, column=0, sticky="ns")
+        right_panel.grid(row=1, column=1, sticky="ns")
         bottom_panel.grid(row=2, column=0, columnspan=2)
 
         #Top frame
@@ -69,15 +74,25 @@ class Interface:
         top_panel.grid_columnconfigure(0, weight=1, minsize=200)
         top_panel.grid_columnconfigure(1, weight=1, minsize=200)
 
-        pil_img = Image.open("img/logo-magna.jpg")
-        pil_img = pil_img.resize((200, 100), Image.LANCZOS)
+        pil_img = Image.open("img/magna-logo.png")
+        width, height = pil_img.size
+        new_height = 70
+        new_width = int((new_height / height) * width)
+        pil_img = pil_img.resize((new_width, new_height), Image.LANCZOS)
         img = ImageTk.PhotoImage(pil_img)
-        image_label = ttk.Label(top_panel, text="Magna", font=self.LABEL_FONT_TITLE)
-        image_label.grid(row=0, column=0, sticky="nw", padx=20, pady=20)
+        image_label = ttk.Label(top_panel, image=img)
+        image_label.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
         image_label.image = img  # Guardar una referencia a la imagen
 
-        date_label = ttk.Label(top_panel, text="Fecha: 2021-09-01", font=self.LABEL_FONT_TITLE, justify='right')
+        date_label = ttk.Label(top_panel, text=today, font=self.LABEL_FONT_TITLE, justify='right')
         date_label.grid(row=0, column=1, sticky="ne", padx=20, pady=20)
+
+        # Left frame
+        left_panel.grid_rowconfigure(0, weight=1)
+        left_panel.grid_rowconfigure(1, weight=1)
+        left_panel.grid_rowconfigure(2, weight=1)
+        left_panel.grid_columnconfigure(0, weight=1)
+        left_panel.grid_columnconfigure(1, weight=1)
 
         # Create a frame for the report labels
         report_all_day_frame = ttk.Frame(left_panel, borderwidth=5, relief="sunken")
@@ -85,11 +100,11 @@ class Interface:
 
         # Report section
         ttk.Label(left_panel, text="Reportes", font=self.LABEL_FONT_TITLE).grid(row=0, column=0, columnspan=2)
-        ttk.Label(report_all_day_frame, text="Del día", font=self.LABEL_FONT_TITLE).grid(row=1, column=0, columnspan=2)
+        ttk.Label(report_all_day_frame, text="Hoy", font=self.LABEL_FONT_TITLE).grid(row=1, column=0, columnspan=2)
 
         self.report_labels["peso_tirado_label"] = ttk.Label(
             report_all_day_frame,
-            text="Peso Tirado (kg):",
+            text="Peso scrap (kg):",
             font=self.LABEL_FONT_TEXT
         )
         self.report_labels["peso_tirado_label"].grid(row=2, column=0, padx=10)
@@ -97,7 +112,7 @@ class Interface:
         self.report_labels["peso_tirado_value"] = ttk.Label(report_all_day_frame, text=str(self.report_data["peso_tirado"]), font=self.LABEL_FONT_TEXT)
         self.report_labels["peso_tirado_value"].grid(row=3, column=0, padx=10)
 
-        self.report_labels["costo_label"] = ttk.Label(report_all_day_frame, text="Costo (💰):", font=self.LABEL_FONT_TEXT)
+        self.report_labels["costo_label"] = ttk.Label(report_all_day_frame, text="Costo ($):", font=self.LABEL_FONT_TEXT)
         self.report_labels["costo_label"].grid(row=2, column=1, padx=10)
 
         self.report_labels["costo_value"] = ttk.Label(report_all_day_frame, text=str(self.report_data["costo"]), font=self.LABEL_FONT_TEXT)
@@ -113,18 +128,21 @@ class Interface:
         # Report section 2
         ttk.Label(report_frame_turn, text="Turno actual", font=self.LABEL_FONT_TITLE).grid(row=0, column=0, columnspan=2)
 
-        self.report_labels["peso_tirado_label_turn"] = ttk.Label(report_frame_turn, text="Peso Tirado (kg):", font=self.LABEL_FONT_TEXT)
+        self.report_labels["peso_tirado_label_turn"] = ttk.Label(report_frame_turn, text="Peso scrap (kg):", font=self.LABEL_FONT_TEXT)
         self.report_labels["peso_tirado_label_turn"].grid(row=1, column=0, padx=10)
 
         self.report_labels["peso_tirado_value_turn"] = ttk.Label(report_frame_turn, text=str(self.report_data["peso_tirado_turn"]), font=self.LABEL_FONT_TEXT)
         self.report_labels["peso_tirado_value_turn"].grid(row=2, column=0, padx=10)
 
-        self.report_labels["costo_label_turn"] = ttk.Label(report_frame_turn, text="Costo (💰):", font=self.LABEL_FONT_TEXT)
+        self.report_labels["costo_label_turn"] = ttk.Label(report_frame_turn, text="Costo ($):", font=self.LABEL_FONT_TEXT)
         self.report_labels["costo_label_turn"].grid(row=1, column=1, padx=10)
 
         self.report_labels["costo_value_turn"] = ttk.Label(report_frame_turn, text=str(self.report_data["costo_turn"]), font=self.LABEL_FONT_TEXT)
         self.report_labels["costo_value_turn"].grid(row=2, column=1, padx=10)
 
+        # Right frame
+        right_panel.grid_rowconfigure(0, weight=1)
+        right_panel.grid_columnconfigure(0, weight=1)
         self.video_label = ttk.Label(right_panel)
         self.video_label.grid(row=0, column=0, sticky="nsew", padx=20)
 
