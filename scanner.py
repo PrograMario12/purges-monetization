@@ -148,7 +148,9 @@ class Scanner:
             position_y = (screen_height // 2) - (window_height // 2)
 
             # Establecer la posición de la ventana
-            window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+            window.geometry(f"""
+                {window_width}x{window_height}+{position_x}+{position_y}
+            """)
 
             window.grid_columnconfigure(0, weight=1, minsize=100)
             window.grid_columnconfigure(1, weight=1, minsize=100)
@@ -158,9 +160,17 @@ class Scanner:
             label_font_title = ("Arial", 12, "bold")
             label_font_text = ("Arial", 12)
             for i, (key, value) in enumerate(labels_text.items()):
-                label_title = ttk.Label(window, text=key, font=label_font_title)
+                label_title = ttk.Label(
+                    window,
+                    text=key,
+                    font=label_font_title
+                )
                 label_title.grid(row=i, column=0, padx=10, pady=5, sticky="e")
-                label_text = ttk.Label(window, text=value, font=label_font_text)
+                label_text = ttk.Label(
+                    window,
+                    text=value,
+                    font=label_font_text
+                )
                 label_text.grid(row=i, column=1, padx=10, pady=5, sticky="w")
 
         style = ttk.Style()
