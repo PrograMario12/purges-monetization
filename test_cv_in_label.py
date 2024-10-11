@@ -13,7 +13,6 @@ import queries
 class Interface:
     ''' This class creates the graphical user interface of the
     application. '''
-
     WINDOW_TITLE = "Monetización de purgas"
     LABEL_TEXT = "Escanear códigos"
     LABEL_FONT_TITLE = ("Arial", 20, "bold")
@@ -75,16 +74,25 @@ class Interface:
         ''' Create and pack the widgets '''
         today = datetime.datetime.now().strftime("%Y-%m-%d")
 
-        def configure_grid(widget, rows, cols, row_weights=None, col_weights=None, min_row_sizes=None, min_col_sizes=None):
+        def configure_grid(widget, rows, cols, grid_options=None):
             ''' Configure the grid layout of a widget '''
+            grid_options = grid_options or {}
+            row_weights = grid_options.get('row_weights', [1] * rows)
+            col_weights = grid_options.get('col_weights', [1] * cols)
+            min_row_sizes = grid_options.get('min_row_sizes', [0] * rows)
+            min_col_sizes = grid_options.get('min_col_sizes', [0] * cols)
+
             for i in range(rows):
-                weight = row_weights[i] if row_weights else 1
-                minsize = min_row_sizes[i] if min_row_sizes else 0
-                widget.grid_rowconfigure(i, weight=weight, minsize=minsize)
+                widget.grid_rowconfigure(
+                    i,
+                    weight=row_weights[i],
+                    minsize=min_row_sizes[i]
+                )
             for j in range(cols):
-                weight = col_weights[j] if col_weights else 1
-                minsize = min_col_sizes[j] if min_col_sizes else 0
-                widget.grid_columnconfigure(j, weight=weight, minsize=minsize)
+                widget.grid_columnconfigure(
+                    j,
+                    weight=col_weights[j],
+                    minsize=min_col_sizes[j])
 
         def create_label(parent, text, style, row, col, **kwargs):
             ''' Create a label widget '''
@@ -93,20 +101,55 @@ class Interface:
             return label
 
         def create_frame(parent, style, row, col, **kwargs):
-            ''' Create a frame widget '''
             frame = ttk.Frame(parent, style=style)
             frame.grid(row=row, column=col, **kwargs)
             return frame
 
         ### Definition of widgets
         ## Definition principal panels
-        left_panel = create_frame(self.window, "TProject.TFrame", 1, 0, sticky="ns")
-        right_panel = create_frame(self.window, "TProject.TFrame", 1, 1, sticky="ns")
-        top_panel = create_frame(self.window, "TProjectHeader.TFrame", 0, 0, columnspan=2, sticky="nsew")
-        bottom_panel = create_frame(self.window, "TProject.TFrame", 2, 0, columnspan=2)
+        left_panel = create_frame(
+            self.window,
+            "TProject.TFrame",
+            1,
+            0,
+            sticky="ns"
+        )
+        right_panel = create_frame(
+            self.window,
+            "TProject.TFrame",
+            1,
+            1,
+            sticky="ns"
+        )
+        top_panel = create_frame(
+            self.window,
+            "TProjectHeader.TFrame",
+            0,
+            0,
+            columnspan=2,
+            sticky="nsew"
+        )
+        bottom_panel = create_frame(
+            self.window,
+            "TProject.TFrame",
+            2,
+            0,
+            columnspan=2
+        )
 
-        configure_grid(self.window, 3, 2, row_weights=[1, 1, 1], col_weights=[1, 1], min_row_sizes=[100, 400, 100], min_col_sizes=[500, 500])
-        configure_grid(top_panel, 1, 2, min_row_sizes=[100], min_col_sizes=[200, 200])
+        grid_options = {
+            'row_weights': [1, 1, 1],
+            'col_weights': [1, 1],
+            'min_row_sizes': [100, 400, 100],
+            'min_col_sizes': [500, 500]
+        }
+        configure_grid(self.window, 3, 2, grid_options)
+        configure_grid(
+            top_panel,
+            1,
+            2,
+            {'min_row_sizes': [100], 'min_col_sizes': [200, 200]}
+        )
 
         pil_img = Image.open("img/magna-logo.png")
         width, height = pil_img.size
@@ -114,72 +157,217 @@ class Interface:
         new_width = int((new_height / height) * width)
         pil_img = pil_img.resize((new_width, new_height), Image.LANCZOS)
         img = ImageTk.PhotoImage(pil_img)
-        image_label = create_label(top_panel, "", "TProjectHeader.TLabel", 0, 0, sticky="nw", padx=10, pady=10)
+        image_label = create_label(
+            top_panel,
+            "",
+            "TProjectHeader.TLabel",
+            0,
+            0,
+            sticky="nw",
+            padx=10,
+            pady=10
+        )
         image_label.config(image=img)
-        image_label.image = img  # Guardar una referencia a la imagen
+        image_label.image = img
 
-        create_label(top_panel, today, "TProjectHeader.TLabel", 0, 1, sticky="ne", padx=20, pady=20)
+        create_label(
+            top_panel,
+            today,
+            "TProjectHeader.TLabel",
+            0,
+            1,
+            sticky="ne",
+            padx=20,
+            pady=20
+        )
 
         # Left frame
         configure_grid(left_panel, 3, 2)
 
         # Create a frame for the report labels
-        report_all_day_frame = ttk.Frame(left_panel, style="TProject.TFrame", borderwidth=5, relief="sunken")
-        report_all_day_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=10)
+        report_all_day_frame = ttk.Frame(
+            left_panel,
+            style="TProject.TFrame",
+            borderwidth=5,
+            relief="sunken"
+        )
+        report_all_day_frame.grid(
+            row=1,
+            column=0,
+            columnspan=2,
+            sticky="nsew",
+            pady=10
+        )
 
         # Report section
-        create_label(left_panel, "Reportes", "TProject_Label_Title.TLabel", 0, 0, columnspan=2)
-        create_label(report_all_day_frame, "Hoy", "TProject_Label_Title.TLabel", 1, 0, columnspan=2)
+        create_label(
+            left_panel,
+            "Reportes",
+            "TProject_Label_Title.TLabel",
+            0,
+            0,
+            columnspan=2
+        )
+        create_label(
+            report_all_day_frame,
+            "Hoy",
+            "TProject_Label_Title.TLabel",
+            1,
+            0,
+            columnspan=2
+        )
 
-        self.report_labels["peso_tirado_label"] = create_label(report_all_day_frame, "Peso scrap (kg):", "TProject_Label_Title.TLabel", 2, 0, padx=10)
-        self.report_labels["peso_tirado_value"] = create_label(report_all_day_frame, str(self.report_data["peso_tirado"]), "TProject_Label_Text.TLabel", 3, 0, padx=10)
-        self.report_labels["costo_label"] = create_label(report_all_day_frame, "Costo ($):", "TProject_Label_Title.TLabel", 2, 1, padx=10)
-        self.report_labels["costo_value"] = create_label(report_all_day_frame, str(self.report_data["costo"]), "TProject_Label_Text.TLabel", 3, 1, padx=10)
+        self.report_labels["peso_tirado_label"] = create_label(
+            report_all_day_frame,
+            "Peso scrap (kg):",
+            "TProject_Label_Title.TLabel",
+            2,
+            0,
+            padx=10
+        )
+        self.report_labels["peso_tirado_value"] = create_label(
+            report_all_day_frame,
+            str(self.report_data["peso_tirado"]),
+            "TProject_Label_Text.TLabel",
+            3,
+            0,
+            padx=10
+        )
+        self.report_labels["costo_label"] = create_label(
+            report_all_day_frame,
+            "Costo ($):",
+            "TProject_Label_Title.TLabel",
+            2,
+            1,
+            padx=10
+        )
+        self.report_labels["costo_value"] = create_label(
+            report_all_day_frame,
+            str(self.report_data["costo"]),
+            "TProject_Label_Text.TLabel",
+            3,
+            1,
+            padx=10
+        )
 
         # Create a frame for the report labels
-        report_frame_turn = ttk.Frame(left_panel, style="TProject.TFrame", borderwidth=5, relief="sunken")
-        report_frame_turn.grid(row=2, column=0, columnspan=2, sticky="nsew", pady=10)
+        report_frame_turn = ttk.Frame(
+            left_panel,
+            style="TProject.TFrame",
+            borderwidth=5,
+            relief="sunken"
+        )
+        report_frame_turn.grid(
+            row=2,
+            column=0,
+            columnspan=2,
+            sticky="nsew",
+            pady=10
+        )
 
         # Report section 2
-        create_label(report_frame_turn, "Turno actual", "TProject_Label_Title.TLabel", 0, 0, columnspan=2)
-        self.report_labels["peso_tirado_label_turn"] = create_label(report_frame_turn, "Peso scrap (kg):", "TProject_Label_Title.TLabel", 1, 0, padx=10)
-        self.report_labels["peso_tirado_value_turn"] = create_label(report_frame_turn, str(self.report_data["peso_tirado_turn"]), "TProject_Label_Text.TLabel", 2, 0, padx=10)
-        self.report_labels["costo_label_turn"] = create_label(report_frame_turn, "Costo ($):", "TProject_Label_Title.TLabel", 1, 1, padx=10)
-        self.report_labels["costo_value_turn"] = create_label(report_frame_turn, str(self.report_data["costo_turn"]), "TProject_Label_Text.TLabel", 2, 1, padx=10)
+        create_label(
+            report_frame_turn,
+            "Turno actual",
+            "TProject_Label_Title.TLabel",
+            0,
+            0,
+            columnspan=2
+        )
+        self.report_labels["peso_tirado_label_turn"] = create_label(
+            report_frame_turn,
+            "Peso scrap (kg):",
+            "TProject_Label_Title.TLabel",
+            1,
+            0,
+            padx=10
+        )
+        self.report_labels["peso_tirado_value_turn"] = create_label(
+            report_frame_turn,
+            str(self.report_data["peso_tirado_turn"]),
+            "TProject_Label_Text.TLabel",
+            2,
+            0,
+            padx=10
+        )
+        self.report_labels["costo_label_turn"] = create_label(
+            report_frame_turn,
+            "Costo ($):",
+            "TProject_Label_Title.TLabel",1,
+            1,
+            padx=10
+        )
+        self.report_labels["costo_value_turn"] = create_label(
+            report_frame_turn,
+            str(self.report_data["costo_turn"]),
+            "TProject_Label_Text.TLabel",
+            2,
+            1,
+            padx=10
+        )
 
         # Right frame
         configure_grid(right_panel, 1, 1)
-        self.video_label = create_label(right_panel, "", "TProject_Label_Text.TLabel", 0, 0, sticky="nsew", padx=20)
+        self.video_label = create_label(
+            right_panel,
+            "",
+            "TProject_Label_Text.TLabel",
+            0,
+            0,
+            sticky="nsew",
+            padx=20
+        )
 
         # Bottom frame
         configure_grid(bottom_panel, 1, 2)
-        button_create_report = ttk.Button(bottom_panel, text="Generar reporte", command=self.sc.start_scanning, style="TProject.TButton")
-        button_create_report.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
-        button_other = ttk.Button(bottom_panel, text="Estadísticas", command=self.sc.start_scanning, style="TProject.TButton")
+        button_create_report = ttk.Button(
+            bottom_panel,
+            text="Generar reporte",
+            command=self.sc.start_scanning,
+            style="TProject.TButton"
+        )
+        button_create_report.grid(
+            row=0,
+            column=0,
+            padx=10,
+            pady=10,
+            sticky="ew"
+        )
+        button_other = ttk.Button(
+            bottom_panel,
+            text="Estadísticas",
+            command=self.sc.start_scanning,
+            style="TProject.TButton"
+        )
         button_other.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
     def update_report(self):
         ''' Update the report with new values '''
-        costo, peso_tirado, cost_turn, weight_turn = self.query.get_cost_and_weight()
+        costo, peso_tirado, cost_turn, weight_turn = (
+            self.query.get_cost_and_weight()
+        )
 
-        # Verificar si los valores son None y asignar un valor predeterminado
-        if costo is None:
-            costo = 0.0
-        if peso_tirado is None:
-            peso_tirado = 0.0
-        if cost_turn is None:
-            cost_turn = 0.0
-        if weight_turn is None:
-            weight_turn = 0.0
+        costo = costo or 0.0
+        peso_tirado = peso_tirado or 0.0
+        cost_turn = cost_turn or 0.0
+        weight_turn = weight_turn or 0.0
 
         self.report_data["peso_tirado"] = round(peso_tirado, 2)
         self.report_data["costo"] = round(costo, 2)
         self.report_data["peso_tirado_turn"] = round(weight_turn, 2)
         self.report_data["costo_turn"] = round(cost_turn, 2)
-        self.report_labels["peso_tirado_value"].config(text=f"{self.report_data['peso_tirado']:.2f}")
-        self.report_labels["costo_value"].config(text=f"{self.report_data['costo']:.2f}")
-        self.report_labels["peso_tirado_value_turn"].config(text=f"{self.report_data['peso_tirado_turn']:.2f}")
-        self.report_labels["costo_value_turn"].config(text=f"{self.report_data['costo_turn']:.2f}")
+        self.report_labels["peso_tirado_value"].config(text=f"""
+                {self.report_data['peso_tirado']:.2f}"""
+            )
+        self.report_labels["costo_value"].config(text=f"""
+                {self.report_data['costo']:.2f}"""
+            )
+        self.report_labels["peso_tirado_value_turn"].config(text=f"""
+                {self.report_data['peso_tirado_turn']:.2f}"""
+            )
+        self.report_labels["costo_value_turn"].config(text=f"""
+                {self.report_data['costo_turn']:.2f}"""
+            )
 
     def update_frame(self):
         ''' Update the OpenCV frame '''
@@ -191,7 +379,6 @@ class Interface:
 
             self.sc.read_qr_code_v2(gray)
 
-            # Resize the frame to a width of 200 while maintaining aspect ratio
             height, width, _ = cv2image.shape
             new_width = 460
             new_height = int((new_width / width) * height)

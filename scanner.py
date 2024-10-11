@@ -1,5 +1,4 @@
-''' This module allows reading QR codes from the computer's 
-camera.'''
+''' This module allows reading QR codes from the computer's camera.'''
 
 import threading
 import tkinter as tk
@@ -26,7 +25,7 @@ class Scanner:
             resultados = pyzbar.decode(gray)
         except PyZbarError as e:
             print(f"Error decoding QR code: {e}")
-        except cv2.error as e:
+        except cv2.error as e: # pylint: disable=catching-non-exception
             print(f"OpenCV error: {e}")
 
         for resultado in resultados:
@@ -74,7 +73,7 @@ class Scanner:
             except PyZbarError as e:
                 print(f"Error decoding QR code: {e}")
                 continue
-            except cv2.error as e:
+            except cv2.error as e: # pylint: disable=catching-non-exception
                 print(f"OpenCV error: {e}")
                 break
 
@@ -137,7 +136,7 @@ class Scanner:
         style.configure("Custom.TButton", background="blue", font=("Arial", 12))
 
         window = tk.Toplevel()
-        window.title("Información del Material")
+        window.title("Información del material")
         window.resizable(False, False)
         window.overrideredirect(True)
 
@@ -145,8 +144,6 @@ class Scanner:
         screen_width = window.winfo_screenwidth()
         screen_height = window.winfo_screenheight()
 
-        # Obtener el tamaño de la ventana
-        window.update_idletasks()  # Actualizar la ventana para obtener el tamaño correcto
         window_width = 350
         window_height = 150
 
@@ -155,7 +152,9 @@ class Scanner:
         position_y = (screen_height // 2) - (window_height // 2)
 
         # Establecer la posición de la ventana
-        window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+        window.geometry(f"""
+            {window_width}x{window_height}+{position_x}+{position_y}
+        """)
 
         window.grid_columnconfigure(0, weight=1, minsize=100)
         window.grid_columnconfigure(1, weight=1, minsize=100)
@@ -175,7 +174,12 @@ class Scanner:
             value_label.grid(column=1, row=idx, padx=10, pady=5, sticky="w")
 
         # Crear un botón para cerrar la ventana
-        close_button = ttk.Button(window, text="Cerrar", command=window.destroy, style="Custom.TButton")
+        close_button = ttk.Button(
+            window,
+            text="Cerrar",
+            command=window.destroy,
+            style="Custom.TButton"
+        )
         close_button.grid(column=0, row=len(labels_text), padx=10, pady=10, columnspan=2)
 
         # Ejecutar el bucle principal de la ventana
@@ -192,5 +196,15 @@ if __name__ == "__main__":
     # scanner = Scanner()
     # scanner.read_qr_code()
     scanner = Scanner()
-    data_test = ["2021-08-25", "07:00:00", "AAAAM3F", "ABS", "16 FL", "Josu de los Cumplido", "10.43", "12", 120.4324]
+    data_test = [
+        "2021-08-25",
+        "07:00:00",
+        "AAAAM3F",
+        "ABS",
+        "16 FL",
+        "Josu de los Cumplido",
+        "10.43",
+        "12",
+        120.4324
+    ]
     scanner.show_message(data_test)
