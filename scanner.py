@@ -130,34 +130,48 @@ class Scanner:
 
     def show_message(self, data):
         ''' This function shows a message box with the captured data.'''
-        label_font_title = ("Arial", 12, "bold")
-        label_font_text = ("Arial", 12)
+        def configure_window(window):
+            ''' Configure the window properties '''
+            window.title("Información del material")
+            window.resizable(False, False)
+            window.overrideredirect(True)
+
+            # Obtener el tamaño de la pantalla
+            screen_width = window.winfo_screenwidth()
+            screen_height = window.winfo_screenheight()
+
+            window_width = 350
+            window_height = 150
+
+            # Calcular la posición x e y para centrar la ventana
+            position_x = (screen_width // 2) - (window_width // 2)
+            position_y = (screen_height // 2) - (window_height // 2)
+
+            # Establecer la posición de la ventana
+            window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+
+            window.grid_columnconfigure(0, weight=1, minsize=100)
+            window.grid_columnconfigure(1, weight=1, minsize=100)
+
+        def create_labels(window, labels_text):
+            ''' Create labels to display the information '''
+            label_font_title = ("Arial", 12, "bold")
+            label_font_text = ("Arial", 12)
+            for i, (key, value) in enumerate(labels_text.items()):
+                label_title = ttk.Label(window, text=key, font=label_font_title)
+                label_title.grid(row=i, column=0, padx=10, pady=5, sticky="e")
+                label_text = ttk.Label(window, text=value, font=label_font_text)
+                label_text.grid(row=i, column=1, padx=10, pady=5, sticky="w")
+
         style = ttk.Style()
-        style.configure("Custom.TButton", background="blue", font=("Arial", 12))
+        style.configure(
+            "Custom.TButton",
+            background="blue",
+            font=("Arial", 12)
+        )
 
         window = tk.Toplevel()
-        window.title("Información del material")
-        window.resizable(False, False)
-        window.overrideredirect(True)
-
-        # Obtener el tamaño de la pantalla
-        screen_width = window.winfo_screenwidth()
-        screen_height = window.winfo_screenheight()
-
-        window_width = 350
-        window_height = 150
-
-        # Calcular la posición x e y para centrar la ventana
-        position_x = (screen_width // 2) - (window_width // 2)
-        position_y = (screen_height // 2) - (window_height // 2)
-
-        # Establecer la posición de la ventana
-        window.geometry(f"""
-            {window_width}x{window_height}+{position_x}+{position_y}
-        """)
-
-        window.grid_columnconfigure(0, weight=1, minsize=100)
-        window.grid_columnconfigure(1, weight=1, minsize=100)
+        configure_window(window)
 
         labels_text = {
             "Material:": data[3],
@@ -165,14 +179,7 @@ class Scanner:
             "Precio:": f"{float(data[8]):.2f}"
         }
 
-        # Crear etiquetas para mostrar la información
-        for idx, (label, value) in enumerate(labels_text.items()):
-            title_label = ttk.Label(window, text=label, font=label_font_title)
-            title_label.grid(column=0, row=idx, padx=10, pady=5, sticky="e")
-
-            value_label = ttk.Label(window, text=value, font=label_font_text)
-            value_label.grid(column=1, row=idx, padx=10, pady=5, sticky="w")
-
+        create_labels(window, labels_text)
         # Crear un botón para cerrar la ventana
         close_button = ttk.Button(
             window,
@@ -180,7 +187,13 @@ class Scanner:
             command=window.destroy,
             style="Custom.TButton"
         )
-        close_button.grid(column=0, row=len(labels_text), padx=10, pady=10, columnspan=2)
+        close_button.grid(
+            column=0,
+            row=len(labels_text),
+            padx=10,
+            pady=10,
+            columnspan=2
+        )
 
         # Ejecutar el bucle principal de la ventana
         window.grab_set()
