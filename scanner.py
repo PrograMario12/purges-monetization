@@ -192,5 +192,5 @@ if __name__ == "__main__":
     # scanner = Scanner()
     # scanner.read_qr_code()
     scanner = Scanner()
-    data = ["2021-08-25", "07:00:00", "AAAAM3F", "ABS", "16 FL", "Josu de los Cumplido", "10.43", "12", 120.4324]
-    scanner.show_message(data)
+    data_test = ["2021-08-25", "07:00:00", "AAAAM3F", "ABS", "16 FL", "Josu de los Cumplido", "10.43", "12", 120.4324]
+    scanner.show_message(data_test)
