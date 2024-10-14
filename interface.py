@@ -4,12 +4,11 @@ import tkinter as tk
 from tkinter import ttk
 import datetime
 import threading
+import webbrowser
 from PIL import Image, ImageTk
 import cv2
 import scanner
 import queries
-import webbrowser
-
 
 class Interface:
     ''' This class creates the graphical user interface of the
@@ -23,7 +22,7 @@ class Interface:
     def __init__(self):
         ''' Initialize the Interface class '''
         self.query = queries.ProcessQueries()
-        self.sc = scanner.Scanner(callback=self.update_report)
+        # self.sc = scanner.Scanner(callback=self.update_report)
         self.report_data = {
             "peso_tirado": 0.0,
             "costo": 0.0,
@@ -34,8 +33,8 @@ class Interface:
         self.create_window()
         self.create_widgets()
         self.update_report()
-        self.cap = cv2.VideoCapture(1)  # OpenCV video capture
-        self.start_update_frame_thread()
+        # self.cap = cv2.VideoCapture(1)  # OpenCV video capture
+        # self.start_update_frame_thread()
 
     def create_window(self):
         ''' Create the main application window '''
@@ -57,16 +56,17 @@ class Interface:
                             foreground="#FFFFFF"
                         )
         style.configure("TProject.TFrame", background="#F9F9F9")
-        style.configure("TProject_Label_Title.TLabel", background="#F9F9F9",
-                            font = ("Arial", 20, "bold"),
-                            foreground="#212529"
+        style.configure("TProject_Label_Title.TLabel",
+                            background="#F9F9F9",
+                            foreground="#212529",
+                            font = ("Arial", 20, "bold")
                         )
         style.configure("TProject_Label_Text.TLabel", background="#F9F9F9",
                             font = ("Arial", 16),
                             foreground="#212529"
                         )
         style.configure("TProject.TButton", background="#6C757D",
-                            font = ("Arial", 12),
+                            font = ("Arial", 16),
                             foreground="#FFFFFF",
                             width=20,
                             height=10
@@ -90,6 +90,7 @@ class Interface:
                     weight=row_weights[i],
                     minsize=min_row_sizes[i]
                 )
+
             for j in range(cols):
                 widget.grid_columnconfigure(
                     j,
@@ -102,6 +103,17 @@ class Interface:
             label.grid(row=row, column=col, **kwargs)
             return label
 
+        def create_input(parent, style, row, col, **kwargs):
+            ''' Create an input widget '''
+            entry = ttk.Entry(
+                    parent,
+                    style=style,
+                    font=("Arial", 16),
+                    justify="center",
+                    takefocus= True)
+            entry.grid(row=row, column=col, **kwargs)
+            return entry
+
         def create_frame(parent, style, row, col, **kwargs):
             frame = ttk.Frame(parent, style=style)
             frame.grid(row=row, column=col, **kwargs)
@@ -112,7 +124,7 @@ class Interface:
         left_panel = create_frame(
             self.window,
             "TProject.TFrame",
-            1,
+            2,
             0,
             sticky="ns"
         )
@@ -120,8 +132,9 @@ class Interface:
             self.window,
             "TProject.TFrame",
             1,
-            1,
-            sticky="ns"
+            0,
+            columnspan=2,
+            sticky="nsew"
         )
         top_panel = create_frame(
             self.window,
@@ -134,18 +147,19 @@ class Interface:
         bottom_panel = create_frame(
             self.window,
             "TProject.TFrame",
-            2,
+            3,
             0,
-            columnspan=2
+            columnspan=2,
+            sticky="n"
         )
 
         grid_options = {
-            'row_weights': [1, 1, 1],
-            'col_weights': [1, 1],
-            'min_row_sizes': [100, 400, 100],
-            'min_col_sizes': [500, 500]
+            'row_weights': [1, 1, 1, 1],
+            'col_weights': [1],
+            'min_row_sizes': [80, 50, 370, 100],
+            'min_col_sizes': [600]
         }
-        configure_grid(self.window, 3, 2, grid_options)
+        configure_grid(self.window, 3, 1, grid_options)
         configure_grid(
             top_panel,
             1,
@@ -196,7 +210,6 @@ class Interface:
         report_all_day_frame.grid(
             row=1,
             column=0,
-            columnspan=2,
             sticky="nsew",
             pady=10
         )
@@ -260,9 +273,8 @@ class Interface:
             relief="sunken"
         )
         report_frame_turn.grid(
-            row=2,
-            column=0,
-            columnspan=2,
+            row=1,
+            column=1,
             sticky="nsew",
             pady=10
         )
@@ -310,15 +322,25 @@ class Interface:
 
         # Right frame
         configure_grid(right_panel, 1, 1)
-        self.video_label = create_label(
+
+        def on_input_change(event):
+            ''' Function to be called when input changes '''
+            input_value = self.data_input.get()
+            self.data_input.delete(0, tk.END)
+            scanner_var = scanner.Scanner(callback=self.update_report)
+            scanner_var.process_qr_code(input_value)
+
+        self.data_input = create_input(
             right_panel,
-            "",
-            "TProject_Label_Text.TLabel",
+            'TProject_Entry.TEntry',
             0,
             0,
-            sticky="nsew",
-            padx=20
-        )
+            sticky="ew",
+            padx=30
+            )
+        self.data_input.insert(0, "Escanea la resina")
+        self.data_input.bind("<FocusIn>", lambda event: self.data_input.delete(0, tk.END))
+        self.data_input.bind("<Return>", on_input_change)
 
         # Bottom frame
         configure_grid(bottom_panel, 1, 2)
@@ -354,7 +376,7 @@ class Interface:
             column=0,
             padx=10,
             pady=10,
-            sticky="ew"
+            sticky="nsew"
         )
 
         def open_statistics():

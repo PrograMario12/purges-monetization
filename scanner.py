@@ -8,6 +8,7 @@ from pyzbar import pyzbar
 from pyzbar.pyzbar_error import PyZbarError
 import database
 import queries
+from windows import window_no_material
 
 class Scanner:
     ''' This class allows reading QR codes from the computer's camera'''
@@ -108,7 +109,18 @@ class Scanner:
                 break
 
         video.release()
-        cv2.destroyAllWindows()
+
+
+    def process_qr_code(self, data):
+        ''' This function processes the data read from a QR code.'''
+        clean_data = self.add_price(self.get_values(data))
+        if clean_data[2] == "":
+            window_no_material.show_no_material_message()
+            return
+        self.insert_data(clean_data)
+        self.show_message(clean_data)
+        if self.callback:
+            self.callback()
 
     def insert_data(self, data):
         ''' This function inserts a test QR code into the database.'''
@@ -124,12 +136,12 @@ class Scanner:
 
     def get_values(self, data):
         ''' This function returns the values of a QR code.'''
-        return [value.replace('kg', '').strip() for value in data.split(',')]
+        return [value.replace('kg', '').strip().replace('Ñ', ':') for value in data.split(',')]
 
     def add_price(self, values):
         ''' This function adds the price to the values.'''
         price = self.query.get_price(values[2])
-        values[-1] = float(price) * float(values[6])
+        values[-1] = round(float(price) * float(values[6]), 2)
         return values
 
     def show_message(self, data):
