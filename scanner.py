@@ -70,12 +70,16 @@ class Scanner:
 
             try:
                 resultados = pyzbar.decode(gray)
+                print(f"Resultados: {resultados}")
             except PyZbarError as e:
                 print(f"Error decoding QR code: {e}")
                 continue
             except cv2.error as e: # pylint: disable=catching-non-exception
                 print(f"OpenCV error: {e}")
                 break
+            except Exception as e:
+                print(f"Error: {e}")
+                continue
 
             for resultado in resultados:
                 try:
@@ -148,9 +152,7 @@ class Scanner:
             position_y = (screen_height // 2) - (window_height // 2)
 
             # Establecer la posición de la ventana
-            window.geometry(f"""
-                {window_width}x{window_height}+{position_x}+{position_y}
-            """)
+            window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
 
             window.grid_columnconfigure(0, weight=1, minsize=100)
             window.grid_columnconfigure(1, weight=1, minsize=100)

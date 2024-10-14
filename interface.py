@@ -8,6 +8,7 @@ from PIL import Image, ImageTk
 import cv2
 import scanner
 import queries
+import webbrowser
 
 
 class Interface:
@@ -41,6 +42,7 @@ class Interface:
         self.window = tk.Tk()
         self.window.geometry("1000x600")
         self.window.minsize(1000, 600)
+        self.window.resizable(False, False)
         self.window.title(self.WINDOW_TITLE)
         self.window.configure(bg="#F9F9F9")
 
@@ -64,7 +66,7 @@ class Interface:
                             foreground="#212529"
                         )
         style.configure("TProject.TButton", background="#6C757D",
-                            font = ("Arial", 16),
+                            font = ("Arial", 12),
                             foreground="#FFFFFF",
                             width=20,
                             height=10
@@ -320,10 +322,31 @@ class Interface:
 
         # Bottom frame
         configure_grid(bottom_panel, 1, 2)
+        def open_report_window():
+            report_window = tk.Toplevel(self.window)
+            report_window.title("Generar Reporte")
+            report_window.geometry("400x300")
+            report_window.configure(bg="#F9F9F9")
+
+            label = ttk.Label(
+            report_window,
+            text="Aquí puedes generar el reporte",
+            style="TProject_Label_Title.TLabel"
+            )
+            label.pack(pady=20)
+
+            button_close = ttk.Button(
+            report_window,
+            text="Cerrar",
+            command=report_window.destroy,
+            style="TProject.TButton"
+            )
+            button_close.pack(pady=10)
+
         button_create_report = ttk.Button(
             bottom_panel,
             text="Generar reporte",
-            command=self.sc.start_scanning,
+            command=open_report_window,
             style="TProject.TButton"
         )
         button_create_report.grid(
@@ -333,10 +356,14 @@ class Interface:
             pady=10,
             sticky="ew"
         )
+
+        def open_statistics():
+            webbrowser.open("http://www.google.com")
+
         button_other = ttk.Button(
             bottom_panel,
             text="Estadísticas",
-            command=self.sc.start_scanning,
+            command=open_statistics,
             style="TProject.TButton"
         )
         button_other.grid(row=0, column=1, padx=10, pady=10, sticky="ew")

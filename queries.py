@@ -78,7 +78,7 @@ class ProcessQueries:
                         )
         elif turn == 2:
             cost_turn = sum(item[0] for item
-                            in data_results 
+                            in data_results
                             if turns_init[2] <= item[2] < turns_init[3]
                         )
             weight_turn = sum(item[1] for item
@@ -92,12 +92,17 @@ class ProcessQueries:
                             or item[2] < turns_init[1]
                         )
             weight_turn = sum(item[1] for item
-                              in data_results 
+                              in data_results
                               if item[2] >= turns_init[3]
                               or item[2] < turns_init[1]
                         )
 
-        return round(cost, 2), round(weight, 2), round(cost_turn, 2), round(weight_turn, 2)
+        return (
+            round(cost, 2),
+            round(weight, 2),
+            round(cost_turn, 2),
+            round(weight_turn, 2)
+        )
 
 if __name__ == "__main__":
     process_queries = ProcessQueries()
