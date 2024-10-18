@@ -9,20 +9,19 @@ from PIL import Image, ImageTk
 import cv2
 import scanner
 import queries
+from views.styles import apply_styles
+
 
 class Interface:
     ''' This class creates the graphical user interface of the
     application. '''
     WINDOW_TITLE = "Monetización de purgas"
-    LABEL_TEXT = "Escanear códigos"
-    LABEL_FONT_TITLE = ("Arial", 20, "bold")
-    BUTTON_TEXT = "Iniciar escaneo"
-    LABEL_FONT_TEXT = ("Arial", 16)
 
-    def __init__(self):
+    def __init__(self, root):
         ''' Initialize the Interface class '''
+        self.root = root
         self.query = queries.ProcessQueries()
-        # self.sc = scanner.Scanner(callback=self.update_report)
+        self.images = {}
         self.report_data = {
             "peso_tirado": 0.0,
             "costo": 0.0,
@@ -33,44 +32,16 @@ class Interface:
         self.create_window()
         self.create_widgets()
         self.update_report()
-        # self.cap = cv2.VideoCapture(1)  # OpenCV video capture
-        # self.start_update_frame_thread()
 
     def create_window(self):
         ''' Create the main application window '''
-        self.window = tk.Tk()
-        self.window.geometry("1000x600")
-        self.window.minsize(1000, 600)
-        self.window.resizable(False, False)
-        self.window.title(self.WINDOW_TITLE)
-        self.window.configure(bg="#F9F9F9")
+        self.root.geometry("1000x600")
+        self.root.minsize(1000, 600)
+        self.root.resizable(False, False)
+        self.root.title(self.WINDOW_TITLE)
+        self.root.configure(bg="#F9F9F9")
 
-        style = ttk.Style()
-        style.theme_use("default")
-        style.configure("TProjectHeader.TFrame",
-                            background="#285C6D"
-                        )
-        style.configure("TProjectHeader.TLabel",
-                            background="#285C6D",
-                            font = ("Arial", 20, "bold"),
-                            foreground="#FFFFFF"
-                        )
-        style.configure("TProject.TFrame", background="#F9F9F9")
-        style.configure("TProject_Label_Title.TLabel",
-                            background="#F9F9F9",
-                            foreground="#212529",
-                            font = ("Arial", 20, "bold")
-                        )
-        style.configure("TProject_Label_Text.TLabel", background="#F9F9F9",
-                            font = ("Arial", 16),
-                            foreground="#212529"
-                        )
-        style.configure("TProject.TButton", background="#6C757D",
-                            font = ("Arial", 16),
-                            foreground="#FFFFFF",
-                            width=20,
-                            height=10
-                        )
+        apply_styles()
 
     def create_widgets(self):
         ''' Create and pack the widgets '''
@@ -103,15 +74,31 @@ class Interface:
             label.grid(row=row, column=col, **kwargs)
             return label
 
-        def create_input(parent, style, row, col, **kwargs):
-            ''' Create an input widget '''
+        def create_input(parent, style, row, col, placeholder, **kwargs):
+            ''' Create an input widget with placeholder '''
             entry = ttk.Entry(
-                    parent,
-                    style=style,
-                    font=("Arial", 16),
-                    justify="center",
-                    takefocus= True)
+                parent,
+                style=style,
+                font=("Arial", 16, "italic"),
+                justify="center"
+            )
             entry.grid(row=row, column=col, **kwargs)
+
+            def on_focus_in(event):
+                if entry.get() == placeholder:
+                    entry.delete(0, tk.END)
+                    entry.config(foreground='#000000')
+
+            def on_focus_out(event):
+                if entry.get() == '':
+                    entry.insert(0, placeholder)
+                    entry.config(foreground='grey')
+
+            entry.insert(0, placeholder)
+            entry.config(foreground='grey')
+            entry.bind("<FocusIn>", on_focus_in)
+            entry.bind("<FocusOut>", on_focus_out)
+
             return entry
 
         def create_frame(parent, style, row, col, **kwargs):
@@ -122,14 +109,14 @@ class Interface:
         ### Definition of widgets
         ## Definition principal panels
         left_panel = create_frame(
-            self.window,
+            self.root,
             "TProject.TFrame",
             2,
             0,
             sticky="ns"
         )
         right_panel = create_frame(
-            self.window,
+            self.root,
             "TProject.TFrame",
             1,
             0,
@@ -137,7 +124,7 @@ class Interface:
             sticky="nsew"
         )
         top_panel = create_frame(
-            self.window,
+            self.root,
             "TProjectHeader.TFrame",
             0,
             0,
@@ -145,7 +132,7 @@ class Interface:
             sticky="nsew"
         )
         bottom_panel = create_frame(
-            self.window,
+            self.root,
             "TProject.TFrame",
             3,
             0,
@@ -159,7 +146,7 @@ class Interface:
             'min_row_sizes': [80, 50, 370, 100],
             'min_col_sizes': [600]
         }
-        configure_grid(self.window, 3, 1, grid_options)
+        configure_grid(self.root, 3, 1, grid_options)
         configure_grid(
             top_panel,
             1,
@@ -172,7 +159,7 @@ class Interface:
         new_height = 70
         new_width = int((new_height / height) * width)
         pil_img = pil_img.resize((new_width, new_height), Image.LANCZOS)
-        img = ImageTk.PhotoImage(pil_img)
+        self.images["logo"] = ImageTk.PhotoImage(pil_img)
         image_label = create_label(
             top_panel,
             "",
@@ -183,8 +170,8 @@ class Interface:
             padx=10,
             pady=10
         )
-        image_label.config(image=img)
-        image_label.image = img
+        image_label.config(image=self.images["logo"])
+        image_label.image = self.images["logo"]
 
         create_label(
             top_panel,
@@ -332,46 +319,24 @@ class Interface:
 
         self.data_input = create_input(
             right_panel,
-            'TProject_Entry.TEntry',
+            "TProject_Label_Text.TEntry",
             0,
             0,
+            placeholder="Escanea el QR",
             sticky="ew",
-            padx=30
-            )
-        self.data_input.insert(0, "Escanea la resina")
-        self.data_input.bind("<FocusIn>", lambda event: self.data_input.delete(0, tk.END))
+            padx=10,
+        )
         self.data_input.bind("<Return>", on_input_change)
 
         # Bottom frame
         configure_grid(bottom_panel, 1, 2)
-        def open_report_window():
-            report_window = tk.Toplevel(self.window)
-            report_window.title("Generar Reporte")
-            report_window.geometry("400x300")
-            report_window.configure(bg="#F9F9F9")
 
-            label = ttk.Label(
-            report_window,
-            text="Aquí puedes generar el reporte",
-            style="TProject_Label_Title.TLabel"
-            )
-            label.pack(pady=20)
-
-            button_close = ttk.Button(
-            report_window,
-            text="Cerrar",
-            command=report_window.destroy,
-            style="TProject.TButton"
-            )
-            button_close.pack(pady=10)
-
-        button_create_report = ttk.Button(
+        self.button_create_report = ttk.Button(
             bottom_panel,
             text="Generar reporte",
-            command=open_report_window,
             style="TProject.TButton"
         )
-        button_create_report.grid(
+        self.button_create_report.grid(
             row=0,
             column=0,
             padx=10,
@@ -445,11 +410,6 @@ class Interface:
         update_thread.daemon = True
         update_thread.start()
 
-    def run(self):
-        ''' Run the graphical user interface '''
-        self.window.mainloop()
-
 # Example of use
 if __name__ == "__main__":
-    interface = Interface()
-    interface.run()
+    print("This script is not meant to be run directly.")

@@ -8,7 +8,7 @@ from pyzbar import pyzbar
 from pyzbar.pyzbar_error import PyZbarError
 import database
 import queries
-from windows import window_no_material
+from views import window_no_material
 
 class Scanner:
     ''' This class allows reading QR codes from the computer's camera'''
@@ -151,6 +151,7 @@ class Scanner:
             window.title("Información del material")
             window.resizable(False, False)
             window.overrideredirect(True)
+            window.configure(background="#F9F9F9")
 
             # Obtener el tamaño de la pantalla
             screen_width = window.winfo_screenwidth()
@@ -177,20 +178,22 @@ class Scanner:
                 label_title = ttk.Label(
                     window,
                     text=key,
-                    font=label_font_title
+                    font=label_font_title,
+                    background="#F9F9F9"
                 )
                 label_title.grid(row=i, column=0, padx=10, pady=5, sticky="e")
                 label_text = ttk.Label(
                     window,
                     text=value,
-                    font=label_font_text
+                    font=label_font_text,
+                    background="#F9F9F9"
                 )
                 label_text.grid(row=i, column=1, padx=10, pady=5, sticky="w")
 
         style = ttk.Style()
         style.configure(
             "Custom.TButton",
-            background="blue",
+            background="#6C757D",
             font=("Arial", 12)
         )
 
