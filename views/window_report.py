@@ -26,7 +26,12 @@ class ReportWindow:
         style = ttk.Style()
         style.theme_use("default")
         style.configure("TProject.TFrame", background="#F9F9F9", height=50)
-        style.configure("TProject_Label_Title.TLabel", background="#F9F9F9", font=("Arial", 16, "bold"), foreground="#212529")
+        style.configure(
+                        "TProject_Label_Title.TLabel",
+                        background="#F9F9F9",
+                        font=("Arial", 16, "bold"),
+                        foreground="#212529"
+                    )
 
         self.window.columnconfigure(0, weight=1)
         self.window.rowconfigure(0, weight=1, minsize=100)
@@ -46,7 +51,11 @@ class ReportWindow:
 
         labels = ["Desde:", "Hasta:"]
         for i, text in enumerate(labels):
-            label = ttk.Label(top_frame, text=text, style="TProject_Label_Title.TLabel")
+            label = ttk.Label(
+                top_frame,
+                text=text,
+                style="TProject_Label_Title.TLabel"
+            )
             label.grid(row=0, column=i*2, pady=20, padx=10)
 
         locale.setlocale(locale.LC_TIME, 'es_ES')
@@ -76,13 +85,20 @@ class ReportWindow:
 
     def create_middle_frame(self):
         ''' Create the middle frame with the table '''
-        middle_frame = ttk.Frame(self.window, style="TProject.TFrame", height=300)
+        middle_frame = ttk.Frame(
+                self.window,
+                style="TProject.TFrame",height=300
+            )
         middle_frame.grid(row=1, column=0, sticky="nsew")
 
         middle_frame.columnconfigure(0, weight=1)
         middle_frame.rowconfigure(0, weight=1, minsize=300)
 
-        self.tree = ttk.Treeview(middle_frame, columns=self.columns, show="headings")
+        self.tree = ttk.Treeview(
+                middle_frame,
+                columns=self.columns,
+                show="headings"
+            )
         for col in self.columns:
             self.tree.heading(col, text=col.replace("_", " ").title())
             self.tree.column(col, anchor=tk.CENTER)
@@ -94,7 +110,11 @@ class ReportWindow:
 
     def create_bottom_frame(self):
         ''' Create the bottom frame with the buttons '''
-        bottom_frame = ttk.Frame(self.window, style="TProject.TFrame", height=100)
+        bottom_frame = ttk.Frame(
+                self.window,
+                style="TProject.TFrame",
+                height=100
+            )
         bottom_frame.grid(row=2, column=0, sticky="nsew")
 
         bottom_frame.columnconfigure([0, 1], weight=1)
@@ -102,8 +122,12 @@ class ReportWindow:
 
         buttons = ["Generar", "Cancelar"]
         for i, text in enumerate(buttons):
-            button = ttk.Button(bottom_frame, text=text, style="TProject.TButton")
-            button.grid(row=0, column=i, padx=10, pady=10, sticky="we")
+            button_reports = ttk.Button(
+                    bottom_frame,
+                    text=text,
+                    style="TProject.TButton"
+                )
+            button_reports.grid(row=0, column=i, padx=10, pady=10, sticky="we")
 
 if __name__ == "__main__":
     root = tk.Tk()
