@@ -1,13 +1,12 @@
-''' Module for connecting to and manipulating a PostgreSQL database'''
+''' This module contains the class DatabaseModel that is used to
+interact with the database'''
 
 import psycopg2
 from psycopg2 import sql
 import credentials
 
-class DataBase:
-    ''' Class for connecting to and manipulating a PostgreSQL
-    database'''
-
+class DatabaseModel:
+    ''' This class is used to interact with the database'''
     def __init__(self):
         ''' Initialize the class'''
         self.connection = None
@@ -20,7 +19,7 @@ class DataBase:
                 user=credentials.DATABASE_USER,
                 password=credentials.DATABASE_PASSWORD,
                 host=credentials.DATABASE_HOST,
-                port=credentials.DATABASE_PORT,
+                port=credentials.DATABASE_PORT
             )
             print("Successful connection to the database")
         except (
@@ -77,13 +76,3 @@ class DataBase:
         except (psycopg2.Error, psycopg2.DatabaseError) as error:
             print(f"Error executing query: {error}")
             return False
-
-# Example of use
-if __name__ == "__main__":
-    database = DataBase()
-    database.create_connection()
-    if database.connection:
-        # Example of data insertion
-        # database.insert_data('mi_tabla', ['columna1', 'columna2'],
-        # ['valor1', 'valor2'])
-        database.close_connection()

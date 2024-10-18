@@ -12,7 +12,11 @@ class ReportWindow:
         ''' Initialize the ReportWindow class '''
         self.parent = parent
         self.window = None
-        self.columns = ("date_register", "name_piece", "gross_weight", "cost")
+        self.columns = (
+            "Fecha",
+            "Nombre de la pieza",
+            "Peso neto",
+            "Costo")
         self.tree = None
         self.show()
 
@@ -97,12 +101,15 @@ class ReportWindow:
         self.tree = ttk.Treeview(
                 middle_frame,
                 columns=self.columns,
-                show="headings"
+                show="headings",
+                selectmode="browse",
+                height=10
             )
         for col in self.columns:
             self.tree.heading(col, text=col.replace("_", " ").title())
-            self.tree.column(col, anchor=tk.CENTER)
+            self.tree.column(col, anchor=tk.CENTER, width=100)
 
+        self.tree.column(1, width=250)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
         self.window.grid_rowconfigure(1, weight=1)
@@ -120,14 +127,20 @@ class ReportWindow:
         bottom_frame.columnconfigure([0, 1], weight=1)
         bottom_frame.rowconfigure(0, weight=1, minsize=100)
 
-        buttons = ["Generar", "Cancelar"]
-        for i, text in enumerate(buttons):
-            button_reports = ttk.Button(
-                    bottom_frame,
-                    text=text,
-                    style="TProject.TButton"
-                )
-            button_reports.grid(row=0, column=i, padx=10, pady=10, sticky="we")
+        button_generate_report = ttk.Button(
+                bottom_frame,
+                text="Generar reporte",
+                style="TProject.TButton"
+            )
+        button_generate_report.grid(row=0, column=0, padx=10, pady=10, sticky="we")
+
+        button_cancel = ttk.Button(
+                bottom_frame,
+                text="Cancelar",
+                style="TProject.TButton",
+                command=self.window.destroy
+            )
+        button_cancel.grid(row=0, column=1, padx=10, pady=10, sticky="we")
 
 if __name__ == "__main__":
     root = tk.Tk()

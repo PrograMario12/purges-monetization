@@ -12,24 +12,12 @@ class PurgeController:
     def show_window_report(self):
         ''' Show the window report. '''
         self.view.show_window_report()
-        self.model.create_connection()
-        if self.model.connection:
-            data = self.model.execute_query(
-                """SELECT date_register,
-                    name_piece,
-                    gross_weight,
-                    cost
-                    FROM register_table
-                """
-                )
-            if data:
-                for row in data:
-                    self.view.report_window_instance.tree.insert("", "end", values=row)
-            self.model.close_connection()
-        else:
-            print("No connection to the database")
+        data = self.model.fetch_data_report()
+        if data:
+            for row in data:
+                self.view.report_window_instance.tree.insert("", "end", values=row)
 
-        print("La información es : ", data)
+
 
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")

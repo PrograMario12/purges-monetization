@@ -35,6 +35,7 @@ class Queries:
         """
         self.db.create_connection()
         data_general = self.db.execute_query(query)
+        print(data_general)
         self.db.close_connection()
 
         return data_general

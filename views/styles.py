@@ -30,3 +30,17 @@ def apply_styles():
                         width=20,
                         height=10
                     )
+    style.configure("Treeview.Heading",
+                    font=("Arial", 14, "bold"),
+                    background="#E9ECEF",
+                    foreground="#000000"
+                    )
+    style.configure("Treeview",
+                    background="#E9ECEF",
+                    foreground="#000000",
+                    fieldbackground="#E9ECEF",
+                    font=("Arial", 12),
+                    height=10
+                    )
+
+    style.map("Treeview", background=[('selected', '#285C6D')])
