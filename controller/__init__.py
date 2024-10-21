@@ -17,6 +17,8 @@ class PurgeController:
             for row in data:
                 self.view.report_window_instance.tree.insert("", "end", values=row)
 
+        self.view.report_window_instance.button_generate_report.config(command=self.model.generate_report)
+
 
 
 if __name__ == "__main__":

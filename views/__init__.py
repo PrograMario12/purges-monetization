@@ -1,4 +1,4 @@
-''' This file is used to import the interface class and create an 
+''' This file is used to import the interface class and create an
 instance of it in the TaskView class '''
 from .interface import Interface
 from .window_report import ReportWindow

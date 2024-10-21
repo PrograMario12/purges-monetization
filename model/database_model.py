@@ -70,9 +70,9 @@ class DatabaseModel:
         try:
             with self.connection.cursor() as cursor:
                 cursor.execute(query)
-                result = cursor.fetchall()
-                self.connection.commit()
-                return result
+                data = cursor.fetchall()
+                return data
         except (psycopg2.Error, psycopg2.DatabaseError) as error:
             print(f"Error executing query: {error}")
-            return False
+            return None
+        

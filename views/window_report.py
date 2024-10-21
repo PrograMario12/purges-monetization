@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
 from .styles import apply_styles
+from tkinter import filedialog, messagebox
 
 class ReportWindow:
     ''' This class creates a window to generate reports '''
@@ -18,6 +19,7 @@ class ReportWindow:
             "Peso neto",
             "Costo")
         self.tree = None
+        self.button_generate_report = None
         self.show()
 
     def show(self):
@@ -53,14 +55,20 @@ class ReportWindow:
         top_frame.columnconfigure([0, 1, 2, 3], weight=1, minsize=100)
         top_frame.rowconfigure(0, weight=0, minsize=100)
 
-        labels = ["Desde:", "Hasta:"]
-        for i, text in enumerate(labels):
-            label = ttk.Label(
-                top_frame,
-                text=text,
-                style="TProject_Label_Title.TLabel"
-            )
-            label.grid(row=0, column=i*2, pady=20, padx=10)
+
+        label = ttk.Label(
+            top_frame,
+            text="Fecha de inicio",
+            style="TProject_Label_Title.TLabel"
+        )
+        label.grid(row=0, column=0, pady=20, padx=10)
+
+        label = ttk.Label(
+            top_frame,
+            text="Fecha de fin",
+            style="TProject_Label_Title.TLabel"
+        )
+        label.grid(row=0, column=2, pady=20, padx=10)
 
         locale.setlocale(locale.LC_TIME, 'es_ES')
 
@@ -127,12 +135,12 @@ class ReportWindow:
         bottom_frame.columnconfigure([0, 1], weight=1)
         bottom_frame.rowconfigure(0, weight=1, minsize=100)
 
-        button_generate_report = ttk.Button(
-                bottom_frame,
-                text="Generar reporte",
-                style="TProject.TButton"
+        self.button_generate_report = ttk.Button(
+            bottom_frame,
+            text="Generar reporte",
+            style="TProject.TButton",
             )
-        button_generate_report.grid(row=0, column=0, padx=10, pady=10, sticky="we")
+        self.button_generate_report.grid(row=0, column=0, padx=10, pady=10, sticky="we")
 
         button_cancel = ttk.Button(
                 bottom_frame,
