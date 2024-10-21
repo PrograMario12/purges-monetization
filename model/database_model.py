@@ -75,4 +75,3 @@ class DatabaseModel:
         except (psycopg2.Error, psycopg2.DatabaseError) as error:
             print(f"Error executing query: {error}")
             return None
-        

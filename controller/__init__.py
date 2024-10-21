@@ -17,9 +17,15 @@ class PurgeController:
             for row in data:
                 self.view.report_window_instance.tree.insert("", "end", values=row)
 
-        self.view.report_window_instance.button_generate_report.config(command=self.model.generate_report)
+        self.view.report_window_instance.button_generate_report.config(command=self.generate_report)
 
-
+    def generate_report(self):
+        ''' Generate a report. '''
+        data = self.model.fetch_data_report()
+        if data:
+            file_path = self.view.ask_save_as_filename()
+            if file_path:
+                self.view.save_report_to_csv(data, file_path)
 
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")

@@ -15,7 +15,7 @@ from views.styles import apply_styles
 class Interface:
     ''' This class creates the graphical user interface of the
     application. '''
-    WINDOW_TITLE = "Monetización de purgas"
+    WINDOW_TITLE = "Costo de purgas"
 
     def __init__(self, root):
         ''' Initialize the Interface class '''

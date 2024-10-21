@@ -136,7 +136,10 @@ class Scanner:
 
     def get_values(self, data):
         ''' This function returns the values of a QR code.'''
-        return [value.replace('kg', '').strip().replace('Ñ', ':') for value in data.split(',')]
+        return [
+            value.replace('kg', '').strip().replace('Ñ', ':')
+            for value in data.split(',')
+        ]
 
     def add_price(self, values):
         ''' This function adds the price to the values.'''
@@ -158,14 +161,16 @@ class Scanner:
             screen_height = window.winfo_screenheight()
 
             window_width = 350
-            window_height = 150
+            window_height = 200
 
             # Calcular la posición x e y para centrar la ventana
             position_x = (screen_width // 2) - (window_width // 2)
             position_y = (screen_height // 2) - (window_height // 2)
 
             # Establecer la posición de la ventana
-            window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+            window.geometry(
+                f"{window_width}x{window_height}+{position_x}+{position_y}"
+            )
 
             window.grid_columnconfigure(0, weight=1, minsize=100)
             window.grid_columnconfigure(1, weight=1, minsize=100)
@@ -174,7 +179,7 @@ class Scanner:
             ''' Create labels to display the information '''
             label_font_title = ("Arial", 12, "bold")
             label_font_text = ("Arial", 12)
-            for i, (key, value) in enumerate(labels_text.items()):
+            for i, (key, value) in enumerate(labels_text.items(), start=1):
                 label_title = ttk.Label(
                     window,
                     text=key,
@@ -200,6 +205,14 @@ class Scanner:
         window = tk.Toplevel()
         configure_window(window)
 
+        label_title = ttk.Label(
+            window,
+            text="Registrado con éxito",
+            font=("Arial", 16, "bold"),
+            background="#F9F9F9"
+        )
+        label_title.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
         labels_text = {
             "Material:": data[3],
             "Cantidad:": data[6],
@@ -210,13 +223,13 @@ class Scanner:
         # Crear un botón para cerrar la ventana
         close_button = ttk.Button(
             window,
-            text="Cerrar",
+            text="Limpiar",
             command=window.destroy,
             style="Custom.TButton"
         )
         close_button.grid(
             column=0,
-            row=len(labels_text),
+            row=len(labels_text) + 1,
             padx=10,
             pady=10,
             columnspan=2
