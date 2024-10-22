@@ -13,19 +13,37 @@ class PurgeController:
         ''' Show the window report. '''
         self.view.show_window_report()
         data = self.model.fetch_data_report()
-        if data:
-            for row in data:
-                self.view.report_window_instance.tree.insert("", "end", values=row)
+        self.update_treeview(data)
 
         self.view.report_window_instance.button_generate_report.config(command=self.generate_report)
+        self.view.report_window_instance.button_cancel.config(command=self.view.report_window_instance.destroy)
+        self.view.report_window_instance.calendar_start.bind("<<DateEntrySelected>>", lambda event: self.update_report(event, "start"))
+        self.view.report_window_instance.calendar_end.bind("<<DateEntrySelected>>", lambda event: self.update_report(event, "end"))
 
     def generate_report(self):
         ''' Generate a report. '''
-        data = self.model.fetch_data_report()
+        data = self.model.fetch_data_report_csv()
         if data:
             file_path = self.view.ask_save_as_filename()
             if file_path:
                 self.view.save_report_to_csv(data, file_path)
+
+    def update_report(self, event, date_type):
+        ''' Update the report with new values. '''
+        if date_type == "start":
+            self.view.report_window_instance.date_start = self.view.report_window_instance.calendar_start.get_date()
+        else:
+            self.view.report_window_instance.date_end = self.view.report_window_instance.calendar_end.get_date()
+
+        data = self.model.fetch_data_report(self.view.report_window_instance.date_start, self.view.report_window_instance.date_end)
+        self.update_treeview(data)
+
+    def update_treeview(self, data):
+        ''' Update the treeview with new data. '''
+        self.view.report_window_instance.tree.delete(*self.view.report_window_instance.tree.get_children())
+        if data:
+            for row in data:
+                self.view.report_window_instance.tree.insert("", "end", values=row)
 
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")

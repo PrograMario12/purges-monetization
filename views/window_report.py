@@ -5,44 +5,37 @@ import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
 from .styles import apply_styles
-from tkinter import filedialog, messagebox
 
-class ReportWindow:
-    ''' This class creates a window to generate reports '''
+class ReportWindow(tk.Toplevel):
+    ''' Window to generate reports '''
     def __init__(self, parent):
-        ''' Initialize the ReportWindow class '''
-        self.parent = parent
-        self.window = None
-        self.columns = (
-            "Fecha",
-            "Nombre de la pieza",
-            "Peso neto",
-            "Costo")
-        self.tree = None
-        self.button_generate_report = None
-        self.show()
-
-    def show(self):
-        ''' Show the window '''
-        self.window = tk.Toplevel(self.parent)
-        self.window.title("Generar Reporte")
-        self.window.geometry("800x500")
-        self.window.minsize(800, 500)
-        self.window.configure(bg="#F9F9F9")
+        super().__init__(parent)
+        self.title("Generar Reporte")
+        self.geometry("800x500")
+        self.minsize(800, 500)
+        self.configure(bg="#F9F9F9")
         style = ttk.Style()
         style.theme_use("default")
         style.configure("TProject.TFrame", background="#F9F9F9", height=50)
         style.configure(
-                        "TProject_Label_Title.TLabel",
-                        background="#F9F9F9",
-                        font=("Arial", 16, "bold"),
-                        foreground="#212529"
-                    )
+                            "TProject_Label_Title.TLabel",
+                            background="#F9F9F9",
+                            font=("Arial", 16, "bold"),
+                            foreground="#212529"
+                        )
 
-        self.window.columnconfigure(0, weight=1)
-        self.window.rowconfigure(0, weight=1, minsize=100)
-        self.window.rowconfigure(1, weight=2)
-        self.window.rowconfigure(2, weight=1)
+        self.columns = ["Fecha", "Descripción", "Peso total", "Costo"]
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1, minsize=100)
+        self.rowconfigure(1, weight=2)
+        self.rowconfigure(2, weight=1)
+
+        self.date_start = None
+        self.date_end = None
+        self.calendar_end = None
+        self.calendar_start = None
+        self.button_cancel = None
 
         self.create_top_frame()
         self.create_middle_frame()
@@ -50,7 +43,7 @@ class ReportWindow:
 
     def create_top_frame(self):
         ''' Create the top frame with date selection '''
-        top_frame = ttk.Frame(self.window, style="TProject.TFrame", height=100)
+        top_frame = ttk.Frame(self, style="TProject.TFrame", height=100)
         top_frame.grid(row=0, column=0, sticky="ns")
         top_frame.columnconfigure([0, 1, 2, 3], weight=1, minsize=100)
         top_frame.rowconfigure(0, weight=0, minsize=100)
@@ -90,15 +83,17 @@ class ReportWindow:
             'locale': 'es_ES'
         }
 
-        for i in range(2):
-            calendar = DateEntry(top_frame, **calendar_options)
-            calendar.grid(row=0, column=i*2 + 1)
+        self.calendar_start = DateEntry(top_frame, **calendar_options)
+        self.calendar_start.grid(row=0, column=1)
+
+        self.calendar_end = DateEntry(top_frame, **calendar_options)
+        self.calendar_end.grid(row=0, column=3)
 
 
     def create_middle_frame(self):
         ''' Create the middle frame with the table '''
         middle_frame = ttk.Frame(
-                self.window,
+                self,
                 style="TProject.TFrame",height=300
             )
         middle_frame.grid(row=1, column=0, sticky="nsew")
@@ -120,13 +115,13 @@ class ReportWindow:
         self.tree.column(1, width=250)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
-        self.window.grid_rowconfigure(1, weight=1)
-        self.window.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
     def create_bottom_frame(self):
         ''' Create the bottom frame with the buttons '''
         bottom_frame = ttk.Frame(
-                self.window,
+                self,
                 style="TProject.TFrame",
                 height=100
             )
@@ -140,15 +135,21 @@ class ReportWindow:
             text="Generar reporte",
             style="TProject.TButton",
             )
-        self.button_generate_report.grid(row=0, column=0, padx=10, pady=10, sticky="we")
+        self.button_generate_report.grid(
+                row=0,
+                column=0,
+                padx=10,
+                pady=10,
+                sticky="we"
+            )
 
-        button_cancel = ttk.Button(
+        self.button_cancel = ttk.Button(
                 bottom_frame,
                 text="Cancelar",
                 style="TProject.TButton",
-                command=self.window.destroy
+                command=self.destroy
             )
-        button_cancel.grid(row=0, column=1, padx=10, pady=10, sticky="we")
+        self.button_cancel.grid(row=0, column=1, padx=10, pady=10, sticky="we")
 
 if __name__ == "__main__":
     root = tk.Tk()
