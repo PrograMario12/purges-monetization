@@ -7,7 +7,9 @@ class PurgeController:
         self.model = model
         self.view = view
 
-        self.view.interface.button_create_report.config(command=self.show_window_report)
+        self.view.interface.button_create_report.config(
+            command=self.show_window_report
+        )
 
     def show_window_report(self):
         ''' Show the window report. '''
