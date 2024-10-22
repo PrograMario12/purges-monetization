@@ -4,6 +4,7 @@ import locale
 import tkinter as tk
 from tkinter import ttk
 from datetime import date
+from PIL import Image, ImageTk
 from tkcalendar import DateEntry
 from .styles import apply_styles
 
@@ -20,11 +21,21 @@ class ReportWindow(tk.Toplevel):
         style.theme_use("default")
         style.configure("TProject.TFrame", background="#F9F9F9", height=50)
         style.configure(
-                            "TProject_Label_Title.TLabel",
-                            background="#F9F9F9",
-                            font=("Arial", 16, "bold"),
-                            foreground="#212529"
-                        )
+            "TProject_Label_Title.TLabel",
+            background="#F9F9F9",
+            font=("Arial", 16, "bold"),
+            foreground="#212529"
+        )
+        style.configure(
+            "DataEntry.TCombobox",
+            fieldbackground="#E9ECEF",
+            background="#285C6D",
+            foreground="black",
+            bordercolor="#285C6D",
+            arrowcolor="white",
+            arrowsize=20,
+            padding=5
+        )
 
         self.columns = ["Fecha", "Descripción", "Peso total", "Costo"]
 
@@ -42,6 +53,10 @@ class ReportWindow(tk.Toplevel):
         self.create_top_frame()
         self.create_middle_frame()
         self.create_bottom_frame()
+
+        icon_image = Image.open("img/costos_purgas.ico")
+        icon = ImageTk.PhotoImage(icon_image)
+        self.iconphoto(False, icon)
 
     def create_top_frame(self):
         ''' Create the top frame with date selection '''
@@ -82,13 +97,23 @@ class ReportWindow(tk.Toplevel):
             'headersforeground': "white",
             'othermonthbackground': '#4298B5',
             'othermonthwebackground': '#B0CCD5',
-            'locale': 'es_ES'
+            'locale': 'es_ES',
         }
 
-        self.calendar_start = DateEntry(top_frame, **calendar_options, state='readonly')
+        self.calendar_start = DateEntry(
+            top_frame,
+            **calendar_options,
+            style = "DataEntry.TCombobox",
+            state='readonly'
+        )
         self.calendar_start.grid(row=0, column=1)
 
-        self.calendar_end = DateEntry(top_frame, **calendar_options, state='readonly')
+        self.calendar_end = DateEntry(
+            top_frame,
+            **calendar_options,
+            style = "DataEntry.TCombobox",
+            state='readonly'
+        )
         self.calendar_end.grid(row=0, column=3)
 
 

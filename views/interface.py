@@ -41,6 +41,9 @@ class Interface:
         self.root.title(self.WINDOW_TITLE)
         self.root.configure(bg="#F9F9F9")
 
+        icon_image = Image.open("img/costos_purgas.ico")
+        icon = ImageTk.PhotoImage(icon_image)
+        self.root.iconphoto(False, icon)
         apply_styles()
 
     def create_widgets(self):
