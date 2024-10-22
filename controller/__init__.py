@@ -40,10 +40,14 @@ class PurgeController:
 
     def update_treeview(self, data):
         ''' Update the treeview with new data. '''
-        self.view.report_window_instance.tree.delete(*self.view.report_window_instance.tree.get_children())
+        self.view.report_window_instance.tree.delete(
+            *self.view.report_window_instance.tree.get_children()
+        )
         if data:
             for row in data:
-                self.view.report_window_instance.tree.insert("", "end", values=row)
+                self.view.report_window_instance.tree.insert(
+                    "", "end", values=row
+                )
 
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")
