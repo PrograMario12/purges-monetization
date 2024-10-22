@@ -85,10 +85,10 @@ class ReportWindow(tk.Toplevel):
             'locale': 'es_ES'
         }
 
-        self.calendar_start = DateEntry(top_frame, **calendar_options)
+        self.calendar_start = DateEntry(top_frame, **calendar_options, state='readonly')
         self.calendar_start.grid(row=0, column=1)
 
-        self.calendar_end = DateEntry(top_frame, **calendar_options)
+        self.calendar_end = DateEntry(top_frame, **calendar_options, state='readonly')
         self.calendar_end.grid(row=0, column=3)
 
 
