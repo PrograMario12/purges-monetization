@@ -43,7 +43,10 @@ class PurgeController:
 
     def generate_report(self):
         ''' Generate a report. '''
-        data = self.model.fetch_data_report_csv()
+        data = self.model.fetch_data_report_csv(
+            self.view.report_window_instance.date_start,
+            self.view.report_window_instance.date_end
+        )
         if data:
             file_path = self.view.ask_save_as_filename()
             if file_path:

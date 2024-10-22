@@ -3,8 +3,8 @@
 import locale
 import tkinter as tk
 from tkinter import ttk
-from tkcalendar import DateEntry
 from datetime import date
+from tkcalendar import DateEntry
 from .styles import apply_styles
 
 

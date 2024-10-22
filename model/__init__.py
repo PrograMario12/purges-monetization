@@ -1,14 +1,10 @@
 ''' This module is the model of the task. It contains the queries and 
 support classes. '''
 
-import csv
 import tkinter as tk
-from tkinter import filedialog
-import psycopg2
-from psycopg2 import sql
-import credentials
-from model import database_model
 import datetime
+from model import database_model
+
 
 class Model:
     ''' This class is the model'''
@@ -43,16 +39,17 @@ class Model:
             return data
         return None
 
-    def fetch_data_report_csv(self):
+    def fetch_data_report_csv(self, date_start_input=None, date_end_input=None):
         ''' Fetch data from the database for the report'''
         self.database.create_connection()
         if self.database.connection:
             data = self.database.execute_query(
-                """
+                f"""
                 SELECT
                     number_of_part,
                     sum(gross_weight)
 	                FROM register_table
+                    WHERE date_register BETWEEN '{date_start_input}' AND '{date_end_input}'
                     GROUP BY number_of_part
                 """
                 )
