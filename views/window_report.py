@@ -4,7 +4,9 @@ import locale
 import tkinter as tk
 from tkinter import ttk
 from tkcalendar import DateEntry
+from datetime import date
 from .styles import apply_styles
+
 
 class ReportWindow(tk.Toplevel):
     ''' Window to generate reports '''
@@ -31,8 +33,8 @@ class ReportWindow(tk.Toplevel):
         self.rowconfigure(1, weight=2)
         self.rowconfigure(2, weight=1)
 
-        self.date_start = None
-        self.date_end = None
+        self.date_start = date.today()
+        self.date_end = date.today()
         self.calendar_end = None
         self.calendar_start = None
         self.button_cancel = None

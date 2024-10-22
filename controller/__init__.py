@@ -12,13 +12,32 @@ class PurgeController:
     def show_window_report(self):
         ''' Show the window report. '''
         self.view.show_window_report()
-        data = self.model.fetch_data_report()
+        self._initialize_report_window()
+
+    def _initialize_report_window(self):
+        ''' Initialize the report window with data and event bindings. '''
+        data = self.model.fetch_data_report(
+            self.view.report_window_instance.date_start,
+            self.view.report_window_instance.date_end
+        )
         self.update_treeview(data)
 
-        self.view.report_window_instance.button_generate_report.config(command=self.generate_report)
-        self.view.report_window_instance.button_cancel.config(command=self.view.report_window_instance.destroy)
-        self.view.report_window_instance.calendar_start.bind("<<DateEntrySelected>>", lambda event: self.update_report(event, "start"))
-        self.view.report_window_instance.calendar_end.bind("<<DateEntrySelected>>", lambda event: self.update_report(event, "end"))
+        self.view.report_window_instance.button_generate_report.config(
+            command=self.generate_report
+        )
+        self.view.report_window_instance.button_cancel.config(
+            command=self.view.report_window_instance.destroy
+        )
+        self.view.report_window_instance.calendar_start.bind(
+            "<<DateEntrySelected>>", lambda event: self.update_report(
+                event, "start"
+            )
+        )
+        self.view.report_window_instance.calendar_end.bind(
+            "<<DateEntrySelected>>", lambda event: self.update_report(
+                event, "end"
+            )
+        )
 
     def generate_report(self):
         ''' Generate a report. '''
@@ -31,11 +50,18 @@ class PurgeController:
     def update_report(self, event, date_type):
         ''' Update the report with new values. '''
         if date_type == "start":
-            self.view.report_window_instance.date_start = self.view.report_window_instance.calendar_start.get_date()
+            self.view.report_window_instance.date_start = (
+                self.view.report_window_instance.calendar_start.get_date()
+            )
         else:
-            self.view.report_window_instance.date_end = self.view.report_window_instance.calendar_end.get_date()
+            self.view.report_window_instance.date_end = (
+                self.view.report_window_instance.calendar_end.get_date()
+            )
 
-        data = self.model.fetch_data_report(self.view.report_window_instance.date_start, self.view.report_window_instance.date_end)
+        data = self.model.fetch_data_report(
+            self.view.report_window_instance.date_start,
+            self.view.report_window_instance.date_end
+        )
         self.update_treeview(data)
 
     def update_treeview(self, data):
