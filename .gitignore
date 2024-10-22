@@ -3,6 +3,9 @@
 
 ### Personal ###
 credentials.py
+build.zip
+dist/
+build/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
