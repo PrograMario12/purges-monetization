@@ -8,7 +8,6 @@ from PIL import Image, ImageTk
 from tkcalendar import DateEntry
 from .styles import apply_styles
 
-
 class ReportWindow(tk.Toplevel):
     ''' Window to generate reports '''
     def __init__(self, parent):
@@ -115,7 +114,6 @@ class ReportWindow(tk.Toplevel):
             state='readonly'
         )
         self.calendar_end.grid(row=0, column=3)
-
 
     def create_middle_frame(self):
         ''' Create the middle frame with the table '''
