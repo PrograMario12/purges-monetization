@@ -5,7 +5,6 @@ import tkinter as tk
 import datetime
 from model import database_model
 
-
 class Model:
     ''' This class is the model'''
     def __init__(self):
@@ -49,7 +48,8 @@ class Model:
                     number_of_part,
                     sum(gross_weight)
 	                FROM register_table
-                    WHERE date_register BETWEEN '{date_start_input}' AND '{date_end_input}'
+                    WHERE date_register BETWEEN '{date_start_input}'
+                    AND '{date_end_input}'
                     GROUP BY number_of_part
                 """
                 )

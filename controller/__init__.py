@@ -56,11 +56,13 @@ class PurgeController:
         ''' Update the report with new values. '''
         if date_type == "start":
             self.view.report_window_instance.config['date_start'] = (
-                self.view.report_window_instance.config['calendar_start'].get_date()
+                self.view.report_window_instance.config['calendar_start']
+                .get_date()
             )
         else:
             self.view.report_window_instance.config['date_end'] = (
-                self.view.report_window_instance.config['calendar_end'].get_date()
+                self.view.report_window_instance.config['calendar_end']
+                .get_date()
             )
 
         data = self.model.fetch_data_report(
