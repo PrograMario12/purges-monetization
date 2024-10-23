@@ -6,7 +6,6 @@ import datetime
 import threading
 import webbrowser
 from PIL import Image, ImageTk
-import cv2
 import scanner
 import queries
 from views.styles import apply_styles

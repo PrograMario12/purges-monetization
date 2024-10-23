@@ -8,52 +8,56 @@ from PIL import Image, ImageTk
 from tkcalendar import DateEntry
 from .styles import apply_styles
 
+# Constantes para configuraciones repetidas
+CALENDAR_OPTIONS = {
+    'selectmode': 'day',
+    'font': ("Arial", 16),
+    'background': "#E9ECEF",
+    'foreground': "black",
+    'selectbackground': "#285C6D",
+    'selectforeground': "white",
+    'bordercolor': "white",
+    'normalbackground': "#E9ECEF",
+    'normalforeground': "black",
+    'weekendbackground': "#B0CCD5",
+    'headersbackground': "#285C6D",
+    'headersforeground': "white",
+    'othermonthbackground': '#4298B5',
+    'othermonthwebackground': '#B0CCD5',
+    'locale': 'es_ES',
+}
+
 class ReportWindow(tk.Toplevel):
     ''' Window to generate reports '''
     def __init__(self, parent):
         super().__init__(parent)
         self.title("Generar Reporte")
-        self.geometry("800x500")
-        self.minsize(800, 500)
+        self.geometry("900x500")
+        self.minsize(900, 500)
         self.configure(bg="#F9F9F9")
-        style = ttk.Style()
-        style.theme_use("default")
-        style.configure("TProject.TFrame", background="#F9F9F9", height=50)
-        style.configure(
-            "TProject_Label_Title.TLabel",
-            background="#F9F9F9",
-            font=("Arial", 16, "bold"),
-            foreground="#212529"
-        )
-        style.configure(
-            "DataEntry.TCombobox",
-            fieldbackground="#E9ECEF",
-            background="#285C6D",
-            foreground="black",
-            bordercolor="#285C6D",
-            arrowcolor="white",
-            arrowsize=20,
-            padding=5
-        )
-
-        self.columns = ["Fecha", "Descripción", "Peso total", "Costo"]
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1, minsize=100)
         self.rowconfigure(1, weight=2)
         self.rowconfigure(2, weight=1)
 
-        self.date_start = date.today()
-        self.date_end = date.today()
-        self.calendar_end = None
-        self.calendar_start = None
-        self.button_cancel = None
+        self.config = {
+            'date_start': date.today(),
+            'date_end': date.today(),
+            'calendar_start': None,
+            'calendar_end': None,
+            'button_cancel': None,
+            'generate_report': None
+        }
 
         self.create_top_frame()
         self.create_middle_frame()
         self.create_bottom_frame()
+        self.set_icon("img/costos_purgas.ico")
 
-        icon_image = Image.open("img/costos_purgas.ico")
+    def set_icon(self, icon_path):
+        ''' Set the window icon '''
+        icon_image = Image.open(icon_path)
         icon = ImageTk.PhotoImage(icon_image)
         self.iconphoto(False, icon)
 
@@ -64,76 +68,52 @@ class ReportWindow(tk.Toplevel):
         top_frame.columnconfigure([0, 1, 2, 3], weight=1, minsize=100)
         top_frame.rowconfigure(0, weight=0, minsize=100)
 
-
-        label = ttk.Label(
-            top_frame,
-            text="Fecha de inicio",
-            style="TProject_Label_Title.TLabel"
-        )
-        label.grid(row=0, column=0, pady=20, padx=10)
-
-        label = ttk.Label(
-            top_frame,
-            text="Fecha de fin",
-            style="TProject_Label_Title.TLabel"
-        )
-        label.grid(row=0, column=2, pady=20, padx=10)
+        self.add_label(top_frame, "Fecha de inicio", 0, 0)
+        self.add_label(top_frame, "Fecha de fin", 0, 2)
 
         locale.setlocale(locale.LC_TIME, 'es_ES')
 
-        calendar_options = {
-            'selectmode': 'day',
-            'font': ("Arial", 16),
-            'background': "#E9ECEF",
-            'foreground': "black",
-            'selectbackground': "#285C6D",
-            'selectforeground': "white",
-            'bordercolor': "white",
-            'normalbackground': "#E9ECEF",
-            'normalforeground': "black",
-            'weekendbackground': "#B0CCD5",
-            'headersbackground': "#285C6D",
-            'headersforeground': "white",
-            'othermonthbackground': '#4298B5',
-            'othermonthwebackground': '#B0CCD5',
-            'locale': 'es_ES',
-        }
+        self.config['calendar_start'] = self.create_calendar(top_frame, 0, 1)
+        self.config['calendar_end'] = self.create_calendar(top_frame, 0, 3)
 
-        self.calendar_start = DateEntry(
-            top_frame,
-            **calendar_options,
-            style = "DataEntry.TCombobox",
+    def add_label(self, parent, text, row, column):
+        ''' Add a label to the specified parent '''
+        label = ttk.Label(
+            parent,
+            text=text,
+            style="TProject_Label_Title.TLabel"
+        )
+        label.grid(row=row, column=column, pady=20, padx=10)
+
+    def create_calendar(self, parent, row, column):
+        ''' Create a DateEntry calendar widget '''
+        calendar = DateEntry(
+            parent,
+            **CALENDAR_OPTIONS,
+            style="DataEntry.TCombobox",
             state='readonly'
         )
-        self.calendar_start.grid(row=0, column=1)
-
-        self.calendar_end = DateEntry(
-            top_frame,
-            **calendar_options,
-            style = "DataEntry.TCombobox",
-            state='readonly'
-        )
-        self.calendar_end.grid(row=0, column=3)
+        calendar.grid(row=row, column=column)
+        return calendar
 
     def create_middle_frame(self):
         ''' Create the middle frame with the table '''
-        middle_frame = ttk.Frame(
-                self,
-                style="TProject.TFrame",height=300
-            )
+        middle_frame = ttk.Frame(self, style="TProject.TFrame", height=300)
         middle_frame.grid(row=1, column=0, sticky="nsew")
 
         middle_frame.columnconfigure(0, weight=1)
         middle_frame.rowconfigure(0, weight=1, minsize=300)
 
+        columns = ["Fecha", "Descripción", "Peso total", "Costo"]
+
         self.tree = ttk.Treeview(
-                middle_frame,
-                columns=self.columns,
-                show="headings",
-                selectmode="browse",
-                height=10
-            )
-        for col in self.columns:
+            middle_frame,
+            columns=columns,
+            show="headings",
+            selectmode="browse",
+            height=10
+        )
+        for col in columns:
             self.tree.heading(col, text=col.replace("_", " ").title())
             self.tree.column(col, anchor=tk.CENTER, width=100)
 
@@ -145,36 +125,24 @@ class ReportWindow(tk.Toplevel):
 
     def create_bottom_frame(self):
         ''' Create the bottom frame with the buttons '''
-        bottom_frame = ttk.Frame(
-                self,
-                style="TProject.TFrame",
-                height=100
-            )
+        bottom_frame = ttk.Frame(self, style="TProject.TFrame", height=100)
         bottom_frame.grid(row=2, column=0, sticky="nsew")
 
         bottom_frame.columnconfigure([0, 1], weight=1)
         bottom_frame.rowconfigure(0, weight=1, minsize=100)
 
-        self.button_generate_report = ttk.Button(
-            bottom_frame,
-            text="Generar reporte",
-            style="TProject.TButton",
-            )
-        self.button_generate_report.grid(
-                row=0,
-                column=0,
-                padx=10,
-                pady=10,
-                sticky="we"
-            )
+        self.config['generate_report'] = self.add_button(bottom_frame, "Generar reporte", 0, 0)
+        self.config['button_cancel'] = self.add_button(bottom_frame, "Cancelar", 0, 1)
 
-        self.button_cancel = ttk.Button(
-                bottom_frame,
-                text="Cancelar",
-                style="TProject.TButton",
-                command=self.destroy
-            )
-        self.button_cancel.grid(row=0, column=1, padx=10, pady=10, sticky="we")
+    def add_button(self, parent, text, row, column):
+        ''' Add a button to the specified parent '''
+        button = ttk.Button(
+            parent,
+            text=text,
+            style="TProject.TButton"
+        )
+        button.grid(row=row, column=column, padx=10, pady=10, sticky="we")
+        return button
 
 if __name__ == "__main__":
     root = tk.Tk()

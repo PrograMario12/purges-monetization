@@ -31,9 +31,9 @@ def apply_styles():
                         height=10
                     )
     style.configure("Treeview.Heading",
-                    font=("Arial", 14, "bold"),
-                    background="#E9ECEF",
-                    foreground="#000000"
+                    font=("Arial", 20, "bold"),
+                    background="#285C6D",
+                    foreground="#FFFFFF"
                     )
     style.configure("Treeview",
                     background="#E9ECEF",
@@ -42,5 +42,23 @@ def apply_styles():
                     font=("Arial", 12),
                     height=10
                     )
+
+    style.configure(
+            "TProject_Label_Title.TLabel",
+            background="#F9F9F9",
+            font=("Arial", 24, "bold"),
+            foreground="#212529"
+        )
+
+    style.configure(
+            "DataEntry.TCombobox",
+            fieldbackground="#E9ECEF",
+            background="#285C6D",
+            foreground="black",
+            bordercolor="#285C6D",
+            arrowcolor="white",
+            arrowsize=20,
+            padding=5
+        )
 
     style.map("Treeview", background=[('selected', '#285C6D')])
