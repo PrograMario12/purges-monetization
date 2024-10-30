@@ -75,3 +75,19 @@ class DatabaseModel:
         except (psycopg2.Error, psycopg2.DatabaseError) as error:
             print(f"Error executing query: {error}")
             return None
+
+    def execute_query_to_delete(self, query):
+        ''' Execute a query to the database'''
+        if not self.connection:
+            print("No connection to the database")
+            return False
+
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query)
+                self.connection.commit()
+                print("Data deleted successfully.")
+                return True
+        except (psycopg2.Error, psycopg2.DatabaseError) as error:
+            print(f"Error executing query: {error}")
+            return False

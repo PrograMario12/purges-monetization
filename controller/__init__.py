@@ -40,6 +40,31 @@ class PurgeController:
                 event, "end"
             )
         )
+        self.view.report_window_instance.menu.add_command(
+            label="Eliminar", command=self.delete_item
+        )
+        self.view.report_window_instance.tree.bind(
+            "<Button-3>", self.show_window_create
+        )
+
+    def delete_item(self):
+        ''' Delete the selected item. '''
+        selected_item = self.view.report_window_instance.tree.selection()
+        if selected_item:
+            id_item = self.view.report_window_instance.tree.item(selected_item)['values'][0]
+            self.view.report_window_instance.tree.delete(selected_item)
+            self.model.delete_item(id_item)
+
+    def show_window_create(self, event):
+        ''' Show the window create. '''
+        selected_item = self.view.report_window_instance.tree.selection()
+        if selected_item:
+            try:
+                self.view.report_window_instance.menu.tk_popup(event.x_root,
+                                                               event.y_root
+                                                            )
+            finally:
+                self.view.report_window_instance.menu.grab_release()
 
     def generate_report(self):
         ''' Generate a report. '''

@@ -26,7 +26,9 @@ class Model:
         if self.database.connection:
             data = self.database.execute_query(
                 f"""
-                SELECT date_register,
+                SELECT
+                    id_register,
+                    date_register,
                     name_piece,
                     gross_weight,
                     cost
@@ -56,6 +58,18 @@ class Model:
             self.database.close_connection()
             return data
         return None
+
+    def delete_item(self, id_item):
+        ''' Delete the selected item. '''
+        self.database.create_connection()
+        if self.database.connection:
+            self.database.execute_query_to_delete(
+                f"""
+                DELETE FROM register_table
+                WHERE id_register = {id_item}
+                """
+            )
+            self.database.close_connection()
 
 # Example of use
 if __name__ == "__main__":

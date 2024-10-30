@@ -104,7 +104,7 @@ class ReportWindow(tk.Toplevel):
         middle_frame.columnconfigure(0, weight=1)
         middle_frame.rowconfigure(0, weight=1, minsize=300)
 
-        columns = ["Fecha", "Descripción", "Peso total", "Costo"]
+        columns = ["ID", "Fecha", "Descripción", "Peso total", "Costo"]
 
         self.tree = ttk.Treeview(
             middle_frame,
@@ -117,11 +117,35 @@ class ReportWindow(tk.Toplevel):
             self.tree.heading(col, text=col.replace("_", " ").title())
             self.tree.column(col, anchor=tk.CENTER, width=100)
 
-        self.tree.column(1, width=250)
+        self.tree.column(2, width=250)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        # Add a menu
+        self.menu = tk.Menu(
+            self,
+            tearoff=0,
+            bg="#E9ECEF",
+            fg="black",
+            activebackground="#285C6D",
+            activeforeground="white",
+            bd=1,
+            relief="flat",
+            font=("Arial", 10)
+        )
+
+        # self.tree.bind("<Button-3>", self.show_menu)
+
+    # def show_menu(self, event):
+    #     ''' Show the context menu only if an item is selected '''
+    #     selected_item = self.tree.selection()
+    #     if selected_item:
+    #         try:
+    #             self.menu.tk_popup(event.x_root, event.y_root)
+    #         finally:
+    #             self.menu.grab_release()
 
     def create_bottom_frame(self):
         ''' Create the bottom frame with the buttons '''
@@ -136,13 +160,13 @@ class ReportWindow(tk.Toplevel):
 
     def add_button(self, parent, text, row, column):
         ''' Add a button to the specified parent '''
-        button = ttk.Button(
+        button_result = ttk.Button(
             parent,
             text=text,
             style="TProject.TButton"
         )
-        button.grid(row=row, column=column, padx=10, pady=10, sticky="we")
-        return button
+        button_result.grid(row=row, column=column, padx=10, pady=10, sticky="we")
+        return button_result
 
 if __name__ == "__main__":
     root = tk.Tk()

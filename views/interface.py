@@ -9,6 +9,7 @@ from PIL import Image, ImageTk
 import scanner
 import queries
 from views.styles import apply_styles
+import credentials
 
 
 class Interface:
@@ -347,7 +348,7 @@ class Interface:
         )
 
         def open_statistics():
-            webbrowser.open("http://www.google.com")
+            webbrowser.open(credentials.POWER_BI)
 
         button_other = ttk.Button(
             bottom_panel,
