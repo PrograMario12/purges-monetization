@@ -15,7 +15,9 @@ class TaskView:
 
     def show_window_report(self):
         ''' Show the window report '''
-        if self.report_window_instance is None or not self.report_window_instance.winfo_exists():
+        if self.report_window_instance is None or not (self
+            .report_window_instance.winfo_exists()):
+            print("Creating new report window")
             self.report_window_instance = ReportWindow(self.root)
         else:
             self.report_window_instance.lift()

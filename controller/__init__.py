@@ -13,6 +13,7 @@ class PurgeController:
 
     def show_window_report(self):
         ''' Show the window report. '''
+        print("Showing window report...")
         self.view.show_window_report()
         self._initialize_report_window()
 
@@ -35,13 +36,15 @@ class PurgeController:
                 event, "start"
             )
         )
+
+        self.view.report_window_instance.menu.entryconfigure(
+            "Eliminar", command=self.delete_item
+        )
+
         self.view.report_window_instance.config['calendar_end'].bind(
             "<<DateEntrySelected>>", lambda event: self.update_report(
                 event, "end"
             )
-        )
-        self.view.report_window_instance.menu.add_command(
-            label="Eliminar", command=self.delete_item
         )
         self.view.report_window_instance.tree.bind(
             "<Button-3>", self.show_window_create
@@ -50,10 +53,32 @@ class PurgeController:
     def delete_item(self):
         ''' Delete the selected item. '''
         selected_item = self.view.report_window_instance.tree.selection()
-        if selected_item:
-            id_item = self.view.report_window_instance.tree.item(selected_item)['values'][0]
-            self.view.report_window_instance.tree.delete(selected_item)
+        if not selected_item:
+            return
+
+        item_values = self.view.report_window_instance.tree.item(
+            selected_item)['values']
+        id_item, date_item, description_item = (
+            item_values[0],
+            item_values[1],
+            item_values[2]
+        )
+
+        if not self.model.validate_day(date_item):
+            self.view.report_window_instance.show_error_message(
+                "No se pudo eliminar el registro."
+            )
+            return
+
+        response = self.view.report_window_instance.show_askquestion(
+            f"¿Está seguro de que desea eliminar {description_item}?"
+        )
+        if response == "yes":
             self.model.delete_item(id_item)
+            self.view.report_window_instance.tree.delete(selected_item)
+            self.view.report_window_instance.show_info_message(
+                "Registro eliminado exitosamente."
+            )
 
     def show_window_create(self, event):
         ''' Show the window create. '''
@@ -72,6 +97,7 @@ class PurgeController:
             self.view.report_window_instance.config['date_start'],
             self.view.report_window_instance.config['date_end']
         )
+
         if data:
             file_path = self.view.ask_save_as_filename()
             if file_path:
@@ -79,33 +105,24 @@ class PurgeController:
 
     def update_report(self, event, date_type):
         ''' Update the report with new values. '''
-        if date_type == "start":
-            self.view.report_window_instance.config['date_start'] = (
-                self.view.report_window_instance.config['calendar_start']
-                .get_date()
-            )
-        else:
-            self.view.report_window_instance.config['date_end'] = (
-                self.view.report_window_instance.config['calendar_end']
-                .get_date()
-            )
+        date_config = self.view.report_window_instance.config
+        date_config[f'date_{date_type}'] = date_config[
+            f'calendar_{date_type}'].get_date()
 
-        data = self.model.fetch_data_report(
-            self.view.report_window_instance.config['date_start'],
-            self.view.report_window_instance.config['date_end']
+        self.update_treeview(
+            self.model.fetch_data_report(
+                date_config['date_start'],
+                date_config['date_end']
+            )
         )
-        self.update_treeview(data)
 
     def update_treeview(self, data):
         ''' Update the treeview with new data. '''
-        self.view.report_window_instance.tree.delete(
-            *self.view.report_window_instance.tree.get_children()
-        )
+        tree = self.view.report_window_instance.tree
+        tree.delete(*tree.get_children())
         if data:
             for row in data:
-                self.view.report_window_instance.tree.insert(
-                    "", "end", values=row
-                )
+                tree.insert("", "end", values=row)
 
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")

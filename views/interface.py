@@ -386,33 +386,6 @@ class Interface:
                 {self.report_data['costo_turn']:.2f}"""
             )
 
-    def update_frame(self):
-        ''' Update the OpenCV frame '''
-        ret, frame = self.cap.read()
-        if ret:
-            # Convert the frame to RGB
-            cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            self.sc.read_qr_code_v2(gray)
-
-            height, width, _ = cv2image.shape
-            new_width = 460
-            new_height = int((new_width / width) * height)
-            resized_image = cv2.resize(cv2image, (new_width, new_height))
-
-            img = Image.fromarray(resized_image)
-            imgtk = ImageTk.PhotoImage(image=img)
-            self.video_label.imgtk = imgtk
-            self.video_label.configure(image=imgtk)
-        self.window.after(10, self.update_frame)
-
-    def start_update_frame_thread(self):
-        ''' Start the update_frame function in a separate thread '''
-        update_thread = threading.Thread(target=self.update_frame)
-        update_thread.daemon = True
-        update_thread.start()
-
 # Example of use
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")

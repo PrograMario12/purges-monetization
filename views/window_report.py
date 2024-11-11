@@ -136,16 +136,7 @@ class ReportWindow(tk.Toplevel):
             font=("Arial", 10)
         )
 
-        # self.tree.bind("<Button-3>", self.show_menu)
-
-    # def show_menu(self, event):
-    #     ''' Show the context menu only if an item is selected '''
-    #     selected_item = self.tree.selection()
-    #     if selected_item:
-    #         try:
-    #             self.menu.tk_popup(event.x_root, event.y_root)
-    #         finally:
-    #             self.menu.grab_release()
+        self.menu.add_command(label="Eliminar")
 
     def create_bottom_frame(self):
         ''' Create the bottom frame with the buttons '''
@@ -155,8 +146,10 @@ class ReportWindow(tk.Toplevel):
         bottom_frame.columnconfigure([0, 1], weight=1)
         bottom_frame.rowconfigure(0, weight=1, minsize=100)
 
-        self.config['generate_report'] = self.add_button(bottom_frame, "Generar reporte", 0, 0)
-        self.config['button_cancel'] = self.add_button(bottom_frame, "Cancelar", 0, 1)
+        self.config['generate_report'] = self.add_button(
+            bottom_frame, "Generar reporte", 0, 0)
+        self.config['button_cancel'] = self.add_button(
+            bottom_frame, "Cancelar", 0, 1)
 
     def add_button(self, parent, text, row, column):
         ''' Add a button to the specified parent '''
@@ -165,8 +158,25 @@ class ReportWindow(tk.Toplevel):
             text=text,
             style="TProject.TButton"
         )
-        button_result.grid(row=row, column=column, padx=10, pady=10, sticky="we")
+        button_result.grid(
+            row=row,
+            column=column,
+            padx=10,
+            pady=10,
+            sticky="we")
         return button_result
+
+    def show_error_message(self, message):
+        ''' Show an error message '''
+        tk.messagebox.showerror("Registro no eliminado", message)
+
+    def show_askquestion(self, message):
+        ''' Show a question message '''
+        return tk.messagebox.askquestion("Eliminar registro", message)
+
+    def show_info_message(self, message):
+        ''' Show an information message '''
+        tk.messagebox.showinfo("Registro eliminado", message)
 
 if __name__ == "__main__":
     root = tk.Tk()

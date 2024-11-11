@@ -1,4 +1,4 @@
-''' This module is the model of the task. It contains the queries and 
+''' This module is the model of the task. It contains the queries and
 support classes. '''
 
 import tkinter as tk
@@ -40,7 +40,8 @@ class Model:
             return data
         return None
 
-    def fetch_data_report_csv(self, date_start_input=None, date_end_input=None):
+    def fetch_data_report_csv(
+            self, date_start_input=None, date_end_input=None):
         ''' Fetch data from the database for the report'''
         self.database.create_connection()
         if self.database.connection:
@@ -58,6 +59,12 @@ class Model:
             self.database.close_connection()
             return data
         return None
+
+    def validate_day(self, date_input):
+        ''' Validate the day of the week '''
+        if date_input == str(datetime.date.today()):
+            return True
+        return False
 
     def delete_item(self, id_item):
         ''' Delete the selected item. '''
