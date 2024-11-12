@@ -3,7 +3,6 @@ Tkinter label. '''
 import tkinter as tk
 from tkinter import ttk
 import datetime
-import threading
 import webbrowser
 from PIL import Image, ImageTk
 import scanner
@@ -50,7 +49,7 @@ class Interface:
         ''' Create and pack the widgets '''
         today = datetime.datetime.now().strftime("%Y-%m-%d")
 
-        def configure_grid(widget, rows, cols, grid_options=None):
+        def configure_grid(widget: tk.Widget, rows: int, cols: int, grid_options: dict = None):
             ''' Configure the grid layout of a widget '''
             grid_options = grid_options or {}
             row_weights = grid_options.get('row_weights', [1] * rows)
@@ -71,13 +70,25 @@ class Interface:
                     weight=col_weights[j],
                     minsize=min_col_sizes[j])
 
-        def create_label(parent, text, style, row, col, **kwargs):
+        def create_label(
+                parent: tk.Widget,
+                text: str,
+                style: str,
+                row: int,
+                col: int,
+                **kwargs) -> ttk.Label:
             ''' Create a label widget '''
             label = ttk.Label(parent, text=text, style=style)
             label.grid(row=row, column=col, **kwargs)
             return label
 
-        def create_input(parent, style, row, col, placeholder, **kwargs):
+        def create_input(
+                parent: tk.Widget,
+                style: str,
+                row: int,
+                col: int,
+                placeholder:
+                str, **kwargs) -> ttk.Entry:
             ''' Create an input widget with placeholder '''
             entry = ttk.Entry(
                 parent,
@@ -104,7 +115,7 @@ class Interface:
 
             return entry
 
-        def create_frame(parent, style, row, col, **kwargs):
+        def create_frame(parent: tk.Widget, style: str, row: int, col: int, **kwargs) -> ttk.Frame:
             frame = ttk.Frame(parent, style=style)
             frame.grid(row=row, column=col, **kwargs)
             return frame
@@ -297,7 +308,7 @@ class Interface:
         self.report_labels["costo_label_turn"] = create_label(
             report_frame_turn,
             "Costo ($):",
-            "TProject_Label_Title.TLabel",1,
+            "TProject_Label_Title.TLabel", 1,
             1,
             padx=10
         )
@@ -313,9 +324,9 @@ class Interface:
         # Right frame
         configure_grid(right_panel, 1, 1)
 
-        def on_input_change(event):
+        def on_input_change() -> None:
             ''' Function to be called when input changes '''
-            input_value = self.data_input.get()
+            input_value: str = self.data_input.get()
             self.data_input.delete(0, tk.END)
             scanner_var = scanner.Scanner(callback=self.update_report)
             scanner_var.process_qr_code(input_value)
@@ -347,7 +358,7 @@ class Interface:
             sticky="nsew"
         )
 
-        def open_statistics():
+        def open_statistics() -> None:
             webbrowser.open(credentials.POWER_BI)
 
         button_other = ttk.Button(

@@ -9,6 +9,7 @@ from tkcalendar import DateEntry
 from .styles import apply_styles
 
 # Constantes para configuraciones repetidas
+BACKGROUND_COLOR = "#F9F9F9"
 CALENDAR_OPTIONS = {
     'selectmode': 'day',
     'font': ("Arial", 16),
@@ -29,31 +30,53 @@ CALENDAR_OPTIONS = {
 
 class ReportWindow(tk.Toplevel):
     ''' Window to generate reports '''
-    def __init__(self, parent):
+    def __init__(self, parent, width=900, height=500):
         super().__init__(parent)
+        self.setup_window(width, height)
+        self.configure_grid_layout()
+        self.initialize_configuration()
+        self.create_top_frame()
+        self.create_middle_frame()
+        self.create_bottom_frame()
+        self.set_icon("img/costos_purgas.ico")
+
+    def setup_window(self, width, height):
+        '''
+        Setup window properties:
+        - Set the window title to "Generar Reporte"
+        - Set the window size to 900x500 pixels
+        - Set the minimum window size to 900x500 pixels
+        - Set the background color to BACKGROUND_COLOR
+        '''
         self.title("Generar Reporte")
-        self.geometry("900x500")
-        self.minsize(900, 500)
-        self.configure(bg="#F9F9F9")
+        self.geometry(f"{width}x{height}")
+        self.minsize(width, height)
+        self.configure(bg=BACKGROUND_COLOR)
 
+    def configure_grid_layout(self):
+        '''
+        Setup window layout:
+        - Configure the main window to have three rows and one column
+        - The first row has a minimum size of 100 pixels and weight of 1
+        - The second row has a weight of 2
+        - The third row has a weight of 1
+        '''
         self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1, minsize=100)
-        self.rowconfigure(1, weight=2)
-        self.rowconfigure(2, weight=1)
+        row_configurations = [(0, 1, 100), (1, 2, None), (2, 1, None)]
+        for row, weight, minsize in row_configurations:
+            self.rowconfigure(row, weight=weight, minsize=minsize)
 
+    def initialize_configuration(self):
+        ''' Initialize configuration dictionary '''
+        today = date.today()
         self.config = {
-            'date_start': date.today(),
-            'date_end': date.today(),
+            'date_start': today,
+            'date_end': today,
             'calendar_start': None,
             'calendar_end': None,
             'button_cancel': None,
             'generate_report': None
         }
-
-        self.create_top_frame()
-        self.create_middle_frame()
-        self.create_bottom_frame()
-        self.set_icon("img/costos_purgas.ico")
 
     def set_icon(self, icon_path):
         ''' Set the window icon '''
