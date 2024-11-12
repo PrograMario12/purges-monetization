@@ -45,7 +45,6 @@ class TaskView:
             "Cantidad"
         ])
         df.insert(0, "Item", range(1, len(df) + 1))
-        df.insert(1, "Plant", credentials.ITEM_CONSTANT)
         plant_value = getattr(credentials, 'ITEM_CONSTANT', 'default_value')
         df.insert(1, "Plant", plant_value)
         df["Código"] = "1136"

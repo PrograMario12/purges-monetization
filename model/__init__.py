@@ -14,18 +14,22 @@ class Model:
     def fetch_data_report(self, date_start_input=None, date_end_input=None):
         ''' Fetch data from the database for the report'''
 
-        if date_start_input and date_end_input:
-            date_start = date_start_input
-            date_end = date_end_input
-        else:
+        if not date_start_input or not date_end_input:
             today = datetime.date.today()
-            date_start = today - datetime.timedelta(days=today.weekday())
-            date_end = today + datetime.timedelta(days=6 - today.weekday())
+            date_start_input = today - datetime.timedelta(days=today.weekday())
+            date_end_input = today + datetime.timedelta(days=6 - today.weekday())
 
         self.database.create_connection()
         if self.database.connection:
-            data = self.database.execute_query(
-                f"""
+            query = self._get_fetch_data_report_query(date_start_input, date_end_input)
+            data = self.database.execute_query(query)
+            self.database.close_connection()
+            return data
+        return None
+
+    def _get_fetch_data_report_query(self, date_start, date_end):
+        ''' Get the SQL query for fetching data report '''
+        return f"""
                 SELECT
                     id_register,
                     date_register,
@@ -35,10 +39,6 @@ class Model:
                     FROM register_table
                     WHERE date_register BETWEEN '{date_start}' AND '{date_end}'
                 """
-                )
-            self.database.close_connection()
-            return data
-        return None
 
     def fetch_data_report_csv(
             self, date_start_input=None, date_end_input=None):
