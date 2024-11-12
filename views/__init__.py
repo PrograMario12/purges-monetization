@@ -2,8 +2,9 @@
 This file is used to import the interface class and create an
 instance of it in the TaskView class
 '''
-import csv
+import logging
 from tkinter import filedialog
+import pandas as pd
 import credentials
 from .interface import Interface
 from .window_report import ReportWindow
@@ -15,50 +16,44 @@ class TaskView:
         self.interface = Interface(self.root)
         self.report_window_instance = None
 
-        if (self.report_window_instance is None or
-            not self.report_window_instance.winfo_exists()):
+    def show_window_report(self):
+        ''' Show the report window '''
+        if (not self.report_window_instance
+            or not self.report_window_instance.winfo_exists()):
             print("Creating new report window")
             self.report_window_instance = ReportWindow(self.root)
         else:
             self.report_window_instance.lift()
+            logging.info("Creating new report window")
 
     def ask_save_as_filename(self):
-        ''' Ask the user to save a file '''
+        '''
+        Prompt the user to select a file path to save the report as an 
+        Excel file
+        '''
         file_path = filedialog.asksaveasfilename(
-            defaultextension=".csv",
-            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+            defaultextension=".xlsx",
+            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
             title="Guardar reporte como"
         )
         return file_path
 
-    def save_report_to_csv(self, data, file_path):
-        ''' Save the report to a CSV file '''
-        with open(file_path, "w", newline="", encoding="utf-8-sig") as file:
-            writer = csv.writer(file)
-            writer.writerow([
-                "Item",
-                "Plant",
-                "Número de parte",
-                "Cantidad",
-                "Locación",
-                "Código",
-                "Centro de costos",
-                "G/L Account"
-            ])
+    def save_report_to_excel(self, data, file_path):
+        ''' Save the report to an Excel file '''
+        df = pd.DataFrame(data, columns=[
+            "Número de parte",
+            "Cantidad"
+        ])
+        df.insert(0, "Item", range(1, len(df) + 1))
+        df.insert(1, "Plant", credentials.ITEM_CONSTANT)
+        plant_value = getattr(credentials, 'ITEM_CONSTANT', 'default_value')
+        df.insert(1, "Plant", plant_value)
+        df["Código"] = "1136"
+        df["Centro de costos"] = "31100Oh541"
+        df["G/L Account"] = "3031220000"
 
-            i = 1
-            for row in data:
-                writer.writerow([
-                    i,
-                    credentials.ITEM_CONSTANT,
-                    row[0],
-                    row[1],
-                    "0700",
-                    "1136",
-                    "31100Oh541",
-                    "3031220000"
-                ])
-                i += 1
+        df.to_excel(file_path, index=False)
 
 if __name__ == "__main__":
-    print("This script is part of the TaskView module and should not be run directly.")
+    print("""This script is part of the TaskView module and should not be run
+           directly.""")

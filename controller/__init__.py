@@ -19,7 +19,7 @@ class PurgeController:
     def _initialize_report_window(self):
         ''' Initialize the report window with data and event bindings. '''
         self._load_report_data()
-        self._configure_report_buttons()
+        self._configure_report_window_buttons()
         self._bind_report_events()
 
     def _load_report_data(self):
@@ -30,11 +30,12 @@ class PurgeController:
         )
         self.update_treeview(data)
 
-    def _configure_report_buttons(self):
+    def _configure_report_window_buttons(self):
         ''' Configure buttons in the report window. '''
         self.view.report_window_instance.config['generate_report'].config(
-        self.view.report_window_instance.config['generate_report'].config(
-            command=self.generate_report)
+            command=self.generate_report
+        )
+        self.view.report_window_instance.config['button_cancel'].config(
             command=self.view.report_window_instance.destroy
         )
 
@@ -110,7 +111,7 @@ class PurgeController:
         if data:
             file_path = self.view.ask_save_as_filename()
             if file_path:
-                self.view.save_report_to_csv(data, file_path)
+                self.view.save_report_to_excel(data, file_path)
 
     def update_report(self, event, date_type):
         ''' Update the report with new values. '''
