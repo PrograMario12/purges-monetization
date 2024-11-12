@@ -8,8 +8,7 @@ class PurgeController:
         self.view = view
 
         self.view.interface.button_create_report.config(
-            command=self.show_window_report
-        )
+            command=self.show_window_report)
 
     def show_window_report(self):
         ''' Show the window report. '''
@@ -19,28 +18,36 @@ class PurgeController:
 
     def _initialize_report_window(self):
         ''' Initialize the report window with data and event bindings. '''
+        self._load_report_data()
+        self._configure_report_buttons()
+        self._bind_report_events()
+
+    def _load_report_data(self):
+        ''' Load data into the report window. '''
         data = self.model.fetch_data_report(
             self.view.report_window_instance.config['date_start'],
             self.view.report_window_instance.config['date_end']
         )
         self.update_treeview(data)
 
+    def _configure_report_buttons(self):
+        ''' Configure buttons in the report window. '''
         self.view.report_window_instance.config['generate_report'].config(
-            command=self.generate_report
-        )
-        self.view.report_window_instance.config['button_cancel'].config(
+        self.view.report_window_instance.config['generate_report'].config(
+            command=self.generate_report)
             command=self.view.report_window_instance.destroy
         )
+
+    def _bind_report_events(self):
+        ''' Bind events in the report window. '''
         self.view.report_window_instance.config['calendar_start'].bind(
             "<<DateEntrySelected>>", lambda event: self.update_report(
                 event, "start"
             )
         )
-
         self.view.report_window_instance.menu.entryconfigure(
             "Eliminar", command=self.delete_item
         )
-
         self.view.report_window_instance.config['calendar_end'].bind(
             "<<DateEntrySelected>>", lambda event: self.update_report(
                 event, "end"
@@ -52,17 +59,13 @@ class PurgeController:
 
     def delete_item(self):
         ''' Delete the selected item. '''
-        selected_item = self.view.report_window_instance.tree.selection()
-        if not selected_item:
+        selected_tree_item = self.view.report_window_instance.tree.selection()
+        if not selected_tree_item:
             return
 
         item_values = self.view.report_window_instance.tree.item(
-            selected_item)['values']
-        id_item, date_item, description_item = (
-            item_values[0],
-            item_values[1],
-            item_values[2]
-        )
+            selected_tree_item)['values']
+        id_item, date_item, description_item = item_values[0], item_values[1], item_values[2]
 
         if not self.model.validate_day(date_item):
             self.view.report_window_instance.show_error_message(
@@ -75,15 +78,21 @@ class PurgeController:
         )
         if response == "yes":
             self.model.delete_item(id_item)
-            self.view.report_window_instance.tree.delete(selected_item)
+            self.view.report_window_instance.tree.delete(selected_tree_item)
             self.view.report_window_instance.show_info_message(
-                "Registro eliminado exitosamente."
-            )
+                "Registro eliminado exitosamente.")
+            try:
+                self.model.delete_item(id_item)
+            except Exception as e:
+                self.view.report_window_instance.show_error_message(
+                    f"Error al eliminar el registro: {str(e)}"
+                )
+                return
 
     def show_window_create(self, event):
         ''' Show the window create. '''
-        selected_item = self.view.report_window_instance.tree.selection()
-        if selected_item:
+        selected_tree_item = self.view.report_window_instance.tree.selection()
+        if selected_tree_item:
             try:
                 self.view.report_window_instance.menu.tk_popup(event.x_root,
                                                                event.y_root

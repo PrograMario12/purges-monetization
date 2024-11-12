@@ -1,8 +1,10 @@
-''' This file is used to import the interface class and create an
-instance of it in the TaskView class '''
+'''
+This file is used to import the interface class and create an
+instance of it in the TaskView class
+'''
 import csv
-import tkinter as tk
 from tkinter import filedialog
+import credentials
 from .interface import Interface
 from .window_report import ReportWindow
 
@@ -13,10 +15,8 @@ class TaskView:
         self.interface = Interface(self.root)
         self.report_window_instance = None
 
-    def show_window_report(self):
-        ''' Show the window report '''
-        if self.report_window_instance is None or not (self
-            .report_window_instance.winfo_exists()):
+        if (self.report_window_instance is None or
+            not self.report_window_instance.winfo_exists()):
             print("Creating new report window")
             self.report_window_instance = ReportWindow(self.root)
         else:
@@ -36,28 +36,29 @@ class TaskView:
         with open(file_path, "w", newline="", encoding="utf-8-sig") as file:
             writer = csv.writer(file)
             writer.writerow([
-                    "Item",
-                    "Plant",
-                    "Número de parte",
-                    "Cantidad",
-                    "Locación",
-                    "Código",
-                    "Centro de costos",
-                    "G/L Account"
-                ])
+                "Item",
+                "Plant",
+                "Número de parte",
+                "Cantidad",
+                "Locación",
+                "Código",
+                "Centro de costos",
+                "G/L Account"
+            ])
+
+            i = 1
             for row in data:
-                i = 1
                 writer.writerow([
-                        i,
-                        2311,
-                        row[0],
-                        row[1],
-                        "0700",
-                        "1136",
-                        "31100Oh541",
-                        "3031220000"
-                    ])
+                    i,
+                    credentials.ITEM_CONSTANT,
+                    row[0],
+                    row[1],
+                    "0700",
+                    "1136",
+                    "31100Oh541",
+                    "3031220000"
+                ])
                 i += 1
 
 if __name__ == "__main__":
-    print("This script is not meant to be run directly.")
+    print("This script is part of the TaskView module and should not be run directly.")
