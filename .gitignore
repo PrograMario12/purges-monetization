@@ -6,6 +6,7 @@ credentials.py
 build.zip
 dist/
 build/
+img/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
