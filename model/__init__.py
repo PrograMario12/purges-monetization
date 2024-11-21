@@ -21,7 +21,18 @@ class Model:
 
         self.database.create_connection()
         if self.database.connection:
-            query = self._get_fetch_data_report_query(date_start_input, date_end_input)
+            query = f"""
+                SELECT
+                    id_register,
+                    date_register,
+                    name_piece,
+                    gross_weight,
+                    cost
+                FROM register_table
+                WHERE date_register BETWEEN '{date_start_input}'
+                AND '{date_end_input}'
+            """
+            print (query)
             data = self.database.execute_query(query)
             self.database.close_connection()
             return data

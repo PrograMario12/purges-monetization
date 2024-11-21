@@ -25,7 +25,7 @@ class Queries:
 
         return price
 
-    def get_cost_wight_hour(self):
+    def get_cost_weight_hour(self):
         ''' Get the cost and weight of a product '''
 
         query = """
@@ -54,7 +54,7 @@ class ProcessQueries:
         }
         turn = support.Support().get_turn()
 
-        data_results = self.query.get_cost_wight_hour()
+        data_results = self.query.get_cost_weight_hour()
 
         # Convertir las horas de los registros a offset-naive
         data_results = [

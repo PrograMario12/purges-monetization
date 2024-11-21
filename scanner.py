@@ -1,6 +1,5 @@
 ''' This module allows reading QR codes from the computer's camera.'''
 
-import threading
 import tkinter as tk
 from tkinter import ttk
 import database
@@ -144,11 +143,6 @@ class Scanner:
         # Ejecutar el bucle principal de la ventana
         window.grab_set()
         window.wait_window()
-
-    def start_scanning(self):
-        ''' This function starts the QR code scanning in a separate thread.'''
-        scanning_thread = threading.Thread(target=self.read_qr_code)
-        scanning_thread.start()
 
 # Example of use
 if __name__ == "__main__":
