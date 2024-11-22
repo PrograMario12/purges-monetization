@@ -46,14 +46,31 @@ class Scanner:
     def get_values(self, data):
         ''' This function returns the values of a QR code.'''
         return [
-            value.replace('kg', '').strip().replace('Ñ', ':')
+            value.replace('kg', '').strip().replace('Ñ', ':').replace('-', '/')
             for value in data.split(',')
         ]
 
     def add_price(self, values):
-        ''' This function adds the price to the values.'''
+        '''
+        This function adds the price to the values.
+
+        Parameters:
+        values (list): A list containing the following elements:
+            - values[0]: date_register (str)
+            - values[1]: hour_register (str)
+            - values[2]: number_of_part (str)
+            - values[3]: name_piece (str)
+            - values[4]: station (str)
+            - values[5]: name_operator (str)
+            - values[6]: net_weight (str)
+            - values[7]: gross_weight (str)
+            - values[8]: cost (float)
+
+        Returns:
+        list: The updated values list with the price added.
+        '''
         price = self.query.get_price(values[2])
-        values[-1] = round(float(price) * float(values[6]), 2)
+        values.append(round(float(price) * float(values[6]), 2))
         return values
 
     def show_message(self, data):
