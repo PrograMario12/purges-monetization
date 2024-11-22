@@ -4,6 +4,7 @@ support classes. '''
 import tkinter as tk
 import datetime
 from model import database_model
+from . import validate_qr_model
 
 class Model:
     ''' This class is the model'''
@@ -32,7 +33,6 @@ class Model:
                 WHERE date_register BETWEEN '{date_start_input}'
                 AND '{date_end_input}'
             """
-            print (query)
             data = self.database.execute_query(query)
             self.database.close_connection()
             return data
@@ -88,6 +88,22 @@ class Model:
                 """
             )
             self.database.close_connection()
+
+    def validate_qr(self, qr_code):
+        ''' Validate the QR code '''
+        qr_model = validate_qr_model.ValidateQrModel(qr_code)
+        data = qr_model.validate()
+
+        if data:
+            response = f"""
+                Registro encontrado: {data[0][0]}
+                Fecha: {data[0][1]}
+                Nombre de la pieza: {data[0][2]}
+                Peso bruto: {data[0][3]}
+                Costo: {data[0][4]}
+                """
+            return response
+        return "Registro no encontrado"
 
 # Example of use
 if __name__ == "__main__":

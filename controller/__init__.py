@@ -1,5 +1,7 @@
 ''' Controller package for the Purge application. '''
 
+import scanner
+
 class PurgeController:
     ''' Controller class for the Purge application. '''
     def __init__(self, model, view):
@@ -10,6 +12,20 @@ class PurgeController:
         self.view.buttons["report"].config(
             command=self._initialize_report_window
         )
+        self.view.frames["ViewValidate"].input_qr.bind(
+            "<Return>", self._validate_qr
+        )
+
+    def _validate_qr(self, event):
+        sc = scanner.Scanner()
+        input_value = self.view.frames["ViewValidate"].input_qr.get()
+        self.view.frames["ViewValidate"].input_qr.delete(0, 'end')
+        input_value = sc.get_values(input_value)
+
+        input_value = [input_value[0], input_value[1], input_value[2]]
+
+        text = self.model.validate_qr(input_value)
+        self.view.frames["ViewValidate"].information.config(text=text)
 
     def _initialize_report_window(self):
         ''' Initialize the report window with data and event bindings. '''

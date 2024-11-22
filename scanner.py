@@ -18,12 +18,16 @@ class Scanner:
 
     def process_qr_code(self, data):
         ''' This function processes the data read from a QR code.'''
-        clean_data = self.add_price(self.get_values(data))
-        if clean_data[2] == "":
+        processed_data = self.add_price(self.get_values(data))
+        try:
+            if processed_data[2] == "":
+                window_no_material.show_no_material_message()
+                return
+        except IndexError:
             window_no_material.show_no_material_message()
             return
-        self.insert_data(clean_data)
-        self.show_message(clean_data)
+        self.insert_data(processed_data)
+        self.show_message(processed_data)
         if self.callback:
             self.callback()
 
@@ -53,7 +57,12 @@ class Scanner:
         return values
 
     def show_message(self, data):
-        ''' This function shows a message box with the captured data.'''
+        """
+        Show a message box with the captured data.
+
+        Parameters:
+        data (list): The data to be displayed in the message box.
+        """
         def configure_window(window):
             ''' Configure the window properties '''
             window.title("Información del material")

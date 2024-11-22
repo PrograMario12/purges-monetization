@@ -73,7 +73,8 @@ class Interface(tk.Frame):
             sticky="ew",
             padx=10,
         )
-        self.data_input.bind("<Return>", lambda event: on_input_change(event, self))
+        self.data_input.bind(
+            "<Return>", lambda event: on_input_change(event, self))
 
         # Left frame
         self.cw.configure_grid(bottom_panel, 2, 2, { 'row_weights': [1, 9]})
