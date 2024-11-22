@@ -56,20 +56,26 @@ class Scanner:
 
         Parameters:
         values (list): A list containing the following elements:
-            - values[0]: date_register (str)
-            - values[1]: hour_register (str)
+            - values[0]: date_register (str) in the format 'YYYY-MM-DD'
+            - values[1]: hour_register (str) in the format 'HH:MM:SS'
             - values[2]: number_of_part (str)
             - values[3]: name_piece (str)
             - values[4]: station (str)
             - values[5]: name_operator (str)
-            - values[6]: net_weight (str)
-            - values[7]: gross_weight (str)
+            - values[6]: net_weight (str) representing a float number
+            - values[7]: gross_weight (str) representing a float number
             - values[8]: cost (float)
 
         Returns:
         list: The updated values list with the price added.
         '''
-        price = self.query.get_price(values[2])
+        try:
+            price = self.query.get_price(values[2])
+            if price is None:
+                raise ValueError("Price not found")
+        except Exception as e:
+            print(f"Error retrieving price: {e}")
+            price = 0.0
         values.append(round(float(price) * float(values[6]), 2))
         return values
 

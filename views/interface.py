@@ -2,6 +2,8 @@
 Tkinter label. '''
 import tkinter as tk
 from tkinter import ttk
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import scanner
 import queries
 from views import create_widgets
@@ -25,6 +27,7 @@ class Interface(tk.Frame):
             "costo_turn": 0.0
         }
         self.report_labels = {}
+        self.ax_bar = None
         self.scanner_var = scanner.Scanner(callback=self.update_report)
         self.cw = create_widgets.WidgetFactory()
         self.create_widgets()
@@ -33,10 +36,10 @@ class Interface(tk.Frame):
     def create_widgets(self):
         ''' Create and pack the widgets '''
         grid_options = {
-            'row_weights': [1, 19],
+            'row_weights': [3, 8, 9],
             'col_weights': [1],
         }
-        self.cw.configure_grid(self, 2, 1, grid_options)
+        self.cw.configure_grid(self, 3, 1, grid_options)
 
         ### Definition of widgets
         ## Definition principal panels
@@ -90,6 +93,16 @@ class Interface(tk.Frame):
         self.create_report_today(bottom_panel)
 
         self.create_report_turn(bottom_panel)
+
+        graphic_frame = self.cw.create_frame(
+            self,
+            "TProject.TFrame",
+            2,
+            0,
+            sticky="ns"
+        )
+        self.create_graphics(graphic_frame)
+
 
     def create_report_turn(self, parent):
         ''' Create the report labels '''
@@ -217,6 +230,42 @@ class Interface(tk.Frame):
                 {self.report_data['costo_turn']:.2f}"""
             )
 
-# Example of use
+        self.ax_bar.clear()
+        self.ax_bar.bar(
+            ['Peso', 'Costo'],
+            [self.report_data['peso_tirado'], self.report_data['costo']],
+            color=['blue', 'green']
+        )
+
+
+    def create_graphics(self, parent):
+        ''' Create the graphics '''
+        fig_bar = Figure(figsize=(5, 4), dpi=100)
+        self.ax_bar = fig_bar.add_subplot(111)
+        categories = ['Peso', 'Costo']
+        values = [self.report_data['peso_tirado'], self.report_data['costo']]
+        print(values)
+        self.ax_bar.bar(categories, values, color=['blue', 'green'])
+        self.ax_bar.set_title("Peso y Costo")
+        self.ax_bar.set_ylabel("Valores")
+
+        canvas_bar = FigureCanvasTkAgg(fig_bar, master=parent)
+        canvas_bar.draw()
+        canvas_bar.get_tk_widget().grid(row=0, column=0)
+
+        fig_line = Figure(figsize=(5, 4), dpi=100)
+        ax_line = fig_line.add_subplot(111)
+        x_values = list(range(10))  # Example x values
+        y_values = [i**2 for i in x_values]  # Example y values (quadratic)
+        ax_line.plot(x_values, y_values, marker='o', linestyle='-', color='r')
+        ax_line.set_title("Tendencia")
+        ax_line.set_xlabel("X")
+        ax_line.set_ylabel("Y")
+
+        canvas_line = FigureCanvasTkAgg(fig_line, master=parent)
+        canvas_line.draw()
+        canvas_line.get_tk_widget().grid(row=0, column=1)
+
+
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")
