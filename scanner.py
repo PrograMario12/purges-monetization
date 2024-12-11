@@ -80,14 +80,14 @@ class Scanner:
         Parameters:
         data (list): The data to be displayed in the message box.
         """
-        def configure_window(window):
+        def configure_window_properties(window):
             ''' Configure the window properties '''
             window.title("Información del material")
             window.resizable(False, False)
             window.overrideredirect(True)
             window.configure(background="#F9F9F9")
 
-            # Obtener el tamaño de la pantalla
+            # Get the screen size
             screen_width = window.winfo_screenwidth()
             screen_height = window.winfo_screenheight()
 
@@ -134,7 +134,7 @@ class Scanner:
         )
 
         window = tk.Toplevel()
-        configure_window(window)
+        configure_window_properties(window)
 
         label_title = ttk.Label(
             window,

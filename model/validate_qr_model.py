@@ -1,10 +1,12 @@
-''' This module is used to validate the QR code. '''
-
-from . import database_model
+"""
+This module is used to validate the QR code.
+"""
 
 class ValidateQrModel:
-    ''' This class is used to validate the QR code. '''
-    def __init__(self, qr_model):
+    """
+    Class that validates the QR code
+    """
+    def __init__(self, qr_model, database_model):
         ''' Initialize the class. '''
         self.date = qr_model[0]
         self.time = qr_model[1]
@@ -13,8 +15,11 @@ class ValidateQrModel:
         self.db = database_model.DatabaseModel()
 
     def validate(self):
-        ''' Validate the QR code. '''
+        """
+        Validate the QR code
+        """
         self.db.create_connection()
+        data = None
 
         if self.db.connection:
             query = f"""
@@ -31,4 +36,7 @@ class ValidateQrModel:
             """
             data = self.db.execute_query(query)
             self.db.close_connection()
-            return data
+
+        if not data:
+            return None
+        return data
