@@ -48,7 +48,9 @@ class TaskView(tk.Tk):
         apply_styles()
 
         # Global container for the views
-        self.shared_frame = ttk.Frame(self, style="TProjectHeader.TFrame", height=100)
+        self.shared_frame = ttk.Frame(self,
+                                      style="TProjectHeader.TFrame",
+                                      height=100)
         self.shared_frame.grid(row=0, column=0, sticky="nsew")
 
         # Container for the views

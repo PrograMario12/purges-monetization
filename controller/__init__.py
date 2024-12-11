@@ -1,5 +1,6 @@
-''' Controller package for the Purge application. '''
-
+"""
+Controller module for the Purge application.
+"""
 import scanner
 
 class PurgeController:
@@ -24,7 +25,7 @@ class PurgeController:
 
         input_value = [input_value[0], input_value[1], input_value[2]]
 
-        text = self.model.validate_qr(input_value)
+        text = self.model.qr_validator.validate_qr(input_value)
         self.view.frames["ViewValidate"].information.config(text=text)
 
     def _initialize_report_window(self):
@@ -36,7 +37,7 @@ class PurgeController:
 
     def _load_report_data(self):
         ''' Load data into the report window. '''
-        data = self.model.fetch_data_report(
+        data = self.model.report_fetcher.fetch_data_report(
             self.view.frames["ReportWindow"].config['date_start'],
             self.view.frames["ReportWindow"].config['date_end']
         )
@@ -76,9 +77,11 @@ class PurgeController:
 
         item_values = self.view.frames["ReportWindow"].tree.item(
             selected_tree_item)['values']
-        id_item, date_item, description_item = item_values[0], item_values[1], item_values[2]
+        id_item = item_values[0]
+        date_item = item_values[1]
+        description_item = item_values[2]
 
-        if not self.model.validate_day(date_item):
+        if not self.model.date_validation.validate_day(date_item):
             self.view.frames["ReportWindow"].show_error_message(
                 "No se pudo eliminar el registro."
             )
@@ -88,12 +91,11 @@ class PurgeController:
             f"¿Está seguro de que desea eliminar {description_item}?"
         )
         if response == "yes":
-            self.model.delete_item(id_item)
             self.view.frames["ReportWindow"].tree.delete(selected_tree_item)
             self.view.frames["ReportWindow"].show_info_message(
                 "Registro eliminado exitosamente.")
             try:
-                self.model.delete_item(id_item)
+                self.model.item_deleter.delete_item(id_item)
             except Exception as e:
                 self.view.frames["ReportWindow"].show_error_message(
                     f"Error al eliminar el registro: {str(e)}"
@@ -113,7 +115,7 @@ class PurgeController:
 
     def generate_report(self):
         ''' Generate a report. '''
-        data = self.model.fetch_data_report_csv(
+        data = self.model.report_fetcher.fetch_data_report_csv(
             self.view.frames["ReportWindow"].config['date_start'],
             self.view.frames["ReportWindow"].config['date_end']
         )

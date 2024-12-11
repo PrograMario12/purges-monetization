@@ -1,6 +1,7 @@
 ''' This module contains the class DatabaseModel that is used to
 interact with the database'''
 
+import logging
 import psycopg2
 from psycopg2 import sql
 import credentials
@@ -21,7 +22,7 @@ class DatabaseModel:
                 host=credentials.DATABASE_HOST,
                 port=credentials.DATABASE_PORT
             )
-            print("Successful connection to the database")
+            logging.info("Connection to the database successful")
         except (
             psycopg2.Error,
             UnicodeDecodeError,
