@@ -1,4 +1,8 @@
-''' Window to generate reports '''
+"""
+Report window module
+This module contains the class to generate reports using the tkcalendar
+library.
+"""
 
 import locale
 import tkinter as tk
@@ -30,6 +34,12 @@ CALENDAR_OPTIONS = {
 class ReportWindow(tk.Frame):
     ''' Window to generate reports '''
     def __init__(self, parent, controller):
+        """
+        Initialize the ReportWindow.
+
+        :param parent: The parent widget.
+        :param controller: The controller managing this window.
+        """
         super().__init__(parent)
         self.controller = controller
         self.configure(bg=BACKGROUND_COLOR)
@@ -44,7 +54,9 @@ class ReportWindow(tk.Frame):
         self.create_middle_frame()
 
     def initialize_configuration(self):
-        ''' Initialize configuration dictionary '''
+        """
+        Initialize the configuration dictionary.
+        """
         today = date.today()
         self.config = {
             'date_start': today,
@@ -54,9 +66,10 @@ class ReportWindow(tk.Frame):
             'generate_report': None
         }
 
-
     def create_top_frame(self):
-        ''' Create the top frame with date selection '''
+        """
+        Create the top frame with the calendar widgets.
+        """
         top_frame = self.cw.create_frame(
             self,
             "TFrame",
@@ -83,7 +96,12 @@ class ReportWindow(tk.Frame):
         self.config['calendar_end'] = self.create_calendar(top_frame, 0, 3)
 
         self.config['generate_report'] = self.add_button(
-            top_frame, "Generar reporte", 0, 4)
+                top_frame, "Generar reporte", 0, 4
+            )
+
+        self.config['generate_normal_report'] = self.add_button(
+                top_frame, "Generar reporte general", 0, 5
+            )
 
     def create_calendar(self, parent, row, column):
         ''' Create a DateEntry calendar widget '''
@@ -124,7 +142,7 @@ class ReportWindow(tk.Frame):
         for col in columns:
             self.tree.heading(col, text=col.replace("_", " ").title())
 
-        self.tree.column(2, width=250)
+        self.tree.column(1, width=250)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
         # Add a menu
@@ -143,16 +161,25 @@ class ReportWindow(tk.Frame):
         self.menu.add_command(label="Eliminar")
 
     def add_button(self, parent, text, row, column):
-        ''' Add a button to the specified parent '''
+        """
+        Add a button to the specified parent.
+
+        :param parent: The parent widget.
+        :param text: The text to display on the button.
+        :param row: The row to place the button in.
+        :param column: The column to place the button in.
+        """
         button_result = ttk.Button(
             parent,
             text=text,
-            style="TProject.TButton"
+            style="TProject.TButton",
+            padding=5
         )
         button_result.grid(
             row=row,
             column=column,
-            sticky="we")
+            sticky="we"
+        )
         return button_result
 
     def show_error_message(self, message):

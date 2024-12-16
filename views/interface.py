@@ -1,5 +1,23 @@
-''' This script shows how to display a video stream from OpenCV in a
-Tkinter label. '''
+"""
+This module defines the Interface class, which creates the graphical
+user interface (GUI) for the application using the Tkinter library. The
+interface includes input fields, labels, and graphical representations
+of data such as bar and line charts. The Interface class is responsible
+for initializing the GUI components, handling user input, and updating
+the displayed data based on queries and scanner input.
+
+Classes:
+    Interface: A class that creates and manages the GUI of the application.
+
+Functions:
+    create_widgets: Creates and packs the widgets in the GUI.
+    create_report_turn: Creates the report labels for the current turn.
+    create_report_today: Creates the report labels for the current day.
+    update_report: Updates the report with new values.
+    create_graphics: Creates the graphical representations of data.
+"""
+
+import logging
 import tkinter as tk
 from tkinter import ttk
 from matplotlib.figure import Figure
@@ -36,10 +54,10 @@ class Interface(tk.Frame):
     def create_widgets(self):
         ''' Create and pack the widgets '''
         grid_options = {
-            'row_weights': [3, 8, 9],
+            'row_weights': [3, 8],
             'col_weights': [1],
         }
-        self.cw.configure_grid(self, 3, 1, grid_options)
+        self.cw.configure_grid(self, 2, 1, grid_options)
 
         ### Definition of widgets
         ## Definition principal panels
@@ -94,14 +112,14 @@ class Interface(tk.Frame):
 
         self.create_report_turn(bottom_panel)
 
-        graphic_frame = self.cw.create_frame(
-            self,
-            "TProject.TFrame",
-            2,
-            0,
-            sticky="ns"
-        )
-        self.create_graphics(graphic_frame)
+        # graphic_frame = self.cw.create_frame(
+        #     self,
+        #     "TProject.TFrame",
+        #     2,
+        #     0,
+        #     sticky="ns"
+        # )
+        # self.create_graphics(graphic_frame)
 
 
     def create_report_turn(self, parent):
@@ -117,7 +135,12 @@ class Interface(tk.Frame):
             pady=10
         )
 
-        self.cw.configure_grid(report_frame_turn, 3, 2, { 'row_weights': [1, 3, 3]})
+        self.cw.configure_grid(
+                report_frame_turn,
+                3,
+                2,
+                { 'row_weights': [1, 3, 3] }
+            )
 
         # Report section 2
         self.cw.create_label(
@@ -152,7 +175,14 @@ class Interface(tk.Frame):
         )
 
     def create_report_today(self, parent):
-        ''' Create the report labels '''
+        '''
+        Create the report labels for today's data.
+
+        This method creates and configures the labels that display the
+        )
+        report_all_day_frame.grid(
+            labels will be placed.
+        '''
         report_all_day_frame = ttk.Frame(
             parent,
             style="TProject.TFrame"
@@ -166,7 +196,12 @@ class Interface(tk.Frame):
             pady=10
         )
 
-        self.cw.configure_grid(report_all_day_frame, 3, 2, { 'row_weights': [1, 3, 3]})
+        self.cw.configure_grid(
+            report_all_day_frame,
+            3,
+            2,
+            { 'row_weights': [1, 3, 3]}
+        )
 
         self.cw.create_label(
             report_all_day_frame,
@@ -230,13 +265,12 @@ class Interface(tk.Frame):
                 {self.report_data['costo_turn']:.2f}"""
             )
 
-        self.ax_bar.clear()
-        self.ax_bar.bar(
-            ['Peso', 'Costo'],
-            [self.report_data['peso_tirado'], self.report_data['costo']],
-            color=['blue', 'green']
-        )
-
+        # self.ax_bar.clear()
+        # self.ax_bar.bar(
+        #     ['Peso', 'Costo'],
+        #     [self.report_data['peso_tirado'], self.report_data['costo']],
+        #     color=['blue', 'green']
+        # )
 
     def create_graphics(self, parent):
         ''' Create the graphics '''
@@ -244,7 +278,8 @@ class Interface(tk.Frame):
         self.ax_bar = fig_bar.add_subplot(111)
         categories = ['Peso', 'Costo']
         values = [self.report_data['peso_tirado'], self.report_data['costo']]
-        print(values)
+        logging.basicConfig(level=logging.INFO)
+        logging.info(values)
         self.ax_bar.bar(categories, values, color=['blue', 'green'])
         self.ax_bar.set_title("Peso y Costo")
         self.ax_bar.set_ylabel("Valores")
@@ -255,8 +290,8 @@ class Interface(tk.Frame):
 
         fig_line = Figure(figsize=(5, 4), dpi=100)
         ax_line = fig_line.add_subplot(111)
-        x_values = list(range(10))  # Example x values
-        y_values = [i**2 for i in x_values]  # Example y values (quadratic)
+        x_values = list(range(10))
+        y_values = [i**2 for i in x_values]
         ax_line.plot(x_values, y_values, marker='o', linestyle='-', color='r')
         ax_line.set_title("Tendencia")
         ax_line.set_xlabel("X")
@@ -265,7 +300,6 @@ class Interface(tk.Frame):
         canvas_line = FigureCanvasTkAgg(fig_line, master=parent)
         canvas_line.draw()
         canvas_line.get_tk_widget().grid(row=0, column=1)
-
 
 if __name__ == "__main__":
     print("This script is not meant to be run directly.")
