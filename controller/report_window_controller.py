@@ -1,6 +1,7 @@
 """
 This module contains the ReportWindowController class.
 """
+from model.datasaver import ExcelSaver
 
 class ReportWindowController:
     """
@@ -37,6 +38,10 @@ class ReportWindowController:
         self.view.frames["ReportWindow"].config['generate_report'].config(
             command=self.generate_report
         )
+
+        self.view.frames["ReportWindow"].config[
+            'generate_normal_report'].config(
+            command=self.generate_report_by_pieces)
 
     def bind_report_events(self):
         """ Bind events to the report window. """
@@ -103,13 +108,23 @@ class ReportWindowController:
         """ Generate a report """
         data = self.model.report_fetcher.fetch_data_report_csv(
             self.view.frames["ReportWindow"].config['date_start'],
-            self.view.frames["ReportWindow"].config['date_end']
-        )
+            self.view.frames["ReportWindow"].config['date_end'])
 
         if data:
             file_path = self.view.ask_save_as_filename()
             if file_path:
                 self.view.save_report_to_excel(data, file_path)
+
+    def generate_report_by_pieces(self):
+        """ Generate a report by pieces """
+        datasaver = ExcelSaver()
+
+        data = self.model.report_fetcher.fetch_all_data(
+            self.view.frames["ReportWindow"].config['date_start'],
+            self.view.frames["ReportWindow"].config['date_end']
+        )
+
+        datasaver.save_report_to_excel(data)
 
     def update_report(self, event, date_type):
         ''' Update the report with new values. '''

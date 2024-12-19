@@ -2,7 +2,7 @@
 support classes. '''
 
 import tkinter as tk
-from model import database_model
+from .database_model import DatabaseModel
 from . import validate_qr_model
 from .date_validation import DateValidator
 from .item_deleter import ItemDeleter
@@ -13,7 +13,7 @@ class Model:
     ''' This class is the model'''
     def __init__(self):
         ''' Initialize the class'''
-        self.database = database_model.DatabaseModel()
+        self.database = DatabaseModel()
         self.date_validation = DateValidator()
         self.item_deleter = ItemDeleter(self.database)
         self.report_fetcher = ReportFetcher(self.database)

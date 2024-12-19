@@ -1,2 +1,6 @@
 [MESSAGES CONTROL]
 disable=no-member
+
+[CLASSES]
+min-public-methods=1
+max-public-methods=20
