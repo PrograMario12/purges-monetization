@@ -18,12 +18,16 @@ class Scanner:
 
     def process_qr_code(self, data):
         ''' This function processes the data read from a QR code.'''
-        clean_data = self.add_price(self.get_values(data))
-        if clean_data[2] == "":
+        processed_data = self.add_price(self.get_values(data))
+        try:
+            if processed_data[2] == "":
+                window_no_material.show_no_material_message()
+                return
+        except IndexError:
             window_no_material.show_no_material_message()
             return
-        self.insert_data(clean_data)
-        self.show_message(clean_data)
+        self.insert_data(processed_data)
+        self.show_message(processed_data)
         if self.callback:
             self.callback()
 
@@ -42,26 +46,54 @@ class Scanner:
     def get_values(self, data):
         ''' This function returns the values of a QR code.'''
         return [
-            value.replace('kg', '').strip().replace('Ñ', ':')
+            value.replace('kg', '').strip().replace('Ñ', ':').replace('-', '/')
             for value in data.split(',')
         ]
 
     def add_price(self, values):
-        ''' This function adds the price to the values.'''
-        price = self.query.get_price(values[2])
-        values[-1] = round(float(price) * float(values[6]), 2)
+        '''
+        This function adds the price to the values.
+
+        Parameters:
+        values (list): A list containing the following elements:
+            - values[0]: date_register (str) in the format 'YYYY-MM-DD'
+            - values[1]: hour_register (str) in the format 'HH:MM:SS'
+            - values[2]: number_of_part (str)
+            - values[3]: name_piece (str)
+            - values[4]: station (str)
+            - values[5]: name_operator (str)
+            - values[6]: net_weight (str) representing a float number
+            - values[7]: gross_weight (str) representing a float number
+            - values[8]: cost (float)
+
+        Returns:
+        list: The updated values list with the price added.
+        '''
+        try:
+            price = self.query.get_price(values[2])
+            if price is None:
+                raise ValueError("Price not found")
+        except Exception as e:
+            print(f"Error retrieving price: {e}")
+            price = 0.0
+        values.append(round(float(price) * float(values[6]), 2))
         return values
 
     def show_message(self, data):
-        ''' This function shows a message box with the captured data.'''
-        def configure_window(window):
+        """
+        Show a message box with the captured data.
+
+        Parameters:
+        data (list): The data to be displayed in the message box.
+        """
+        def configure_window_properties(window):
             ''' Configure the window properties '''
             window.title("Información del material")
             window.resizable(False, False)
             window.overrideredirect(True)
             window.configure(background="#F9F9F9")
 
-            # Obtener el tamaño de la pantalla
+            # Get the screen size
             screen_width = window.winfo_screenwidth()
             screen_height = window.winfo_screenheight()
 
@@ -108,7 +140,7 @@ class Scanner:
         )
 
         window = tk.Toplevel()
-        configure_window(window)
+        configure_window_properties(window)
 
         label_title = ttk.Label(
             window,

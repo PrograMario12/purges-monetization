@@ -1,11 +1,35 @@
 ''' This module contains the class DatabaseModel that is used to
 interact with the database'''
 
+import logging
+from abc import ABC, abstractmethod
 import psycopg2
 from psycopg2 import sql
 import credentials
 
-class DatabaseModel:
+class DatabaseInterface(ABC):
+    """ Abstract class for database interaction """
+    @abstractmethod
+    def create_connection(self):
+        """ Create a connection to the database """
+
+    @abstractmethod
+    def close_connection(self):
+        """ Close the connection to the database """
+
+    @abstractmethod
+    def insert_data(self, table, columns, values):
+        """ Insert data into a table """
+
+    @abstractmethod
+    def execute_query(self, query):
+        """ Execute a query to the database """
+
+    @abstractmethod
+    def execute_query_to_delete(self, query):
+        """ Execute a query to the database """
+
+class DatabaseModel(DatabaseInterface):
     ''' This class is used to interact with the database'''
     def __init__(self):
         ''' Initialize the class'''
@@ -21,7 +45,7 @@ class DatabaseModel:
                 host=credentials.DATABASE_HOST,
                 port=credentials.DATABASE_PORT
             )
-            print("Successful connection to the database")
+            logging.info("Connection to the database successful")
         except (
             psycopg2.Error,
             UnicodeDecodeError,

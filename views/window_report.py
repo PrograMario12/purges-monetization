@@ -1,50 +1,67 @@
-''' Window to generate reports '''
+"""This module contains the ReportWindow class, which is responsible for
+generating reports using the tkcalendar library.
+The ReportWindow class creates a user interface with calendar widgets
+to select date ranges and a table to display report data.
+Classes:
+    ReportWindow: A class that represents the report generation window.
+Functions:
+    __init__(self, parent, controller): Initializes the ReportWindow.
+    initialize_configuration(self): Initializes the configuration
+    dictionary with default values.
+    create_top_frame(self): Creates the top frame containing calendar
+    widgets and buttons.
+    create_calendar(self, parent, row, column): Creates a DateEntry
+    calendar widget.
+    create_middle_frame(self): Creates the middle frame containing a
+    table to display report data.
+    add_button(self, parent, text, row, column): Adds a button to the
+    specified parent widget.
+    show_error_message(self, message): Displays an error message in a
+    message box.
+    show_askquestion(self, message): Displays a question message in a
+    message box and returns the user's response.
+    show_info_message(self, message): Displays an information message in
+    a message box.
+"""
 
 import locale
 import tkinter as tk
 from tkinter import ttk
 from datetime import date
 from tkcalendar import DateEntry
-from views import create_widgets
-
-# Constantes para configuraciones repetidas
-BACKGROUND_COLOR = "#F9F9F9"
-CALENDAR_OPTIONS = {
-    'selectmode': 'day',
-    'font': ("Arial", 16),
-    'background': "#E9ECEF",
-    'foreground': "black",
-    'selectbackground': "#285C6D",
-    'selectforeground': "white",
-    'bordercolor': "white",
-    'normalbackground': "#E9ECEF",
-    'normalforeground': "black",
-    'weekendbackground': "#B0CCD5",
-    'headersbackground': "#285C6D",
-    'headersforeground': "white",
-    'othermonthbackground': '#4298B5',
-    'othermonthwebackground': '#B0CCD5',
-    'locale': 'es_ES',
-}
+from views.create_widgets import(
+    GridConfigurator, FrameFactory, LabelFactory, ButtonFactory)
+from views.config import BACKGROUND_COLOR, CALENDAR_OPTIONS
 
 class ReportWindow(tk.Frame):
     ''' Window to generate reports '''
     def __init__(self, parent, controller):
+        """
+        Initialize the ReportWindow.
+
+        :param parent: The parent widget.
+        :param controller: The controller managing this window.
+        """
         super().__init__(parent)
         self.controller = controller
         self.configure(bg=BACKGROUND_COLOR)
-        self.cw = create_widgets.WidgetFactory()
 
-        self.cw.configure_grid(self, 2, 1, {
-            'row_weights': [1, 19],
-            'col_weights': [1]})
+        self.grid_configurator = GridConfigurator()
+        self.frame_factory = FrameFactory()
+        self.label_factory = LabelFactory()
+        self.button_factory = ButtonFactory()
+
+        self.grid_configurator.configure(
+            self, 2, 1, { 'row_weights': [1, 19], 'col_weights': [1]})
 
         self.initialize_configuration()
         self.create_top_frame()
         self.create_middle_frame()
 
     def initialize_configuration(self):
-        ''' Initialize configuration dictionary '''
+        """
+        Initialize the configuration dictionary.
+        """
         today = date.today()
         self.config = {
             'date_start': today,
@@ -54,27 +71,19 @@ class ReportWindow(tk.Frame):
             'generate_report': None
         }
 
-
     def create_top_frame(self):
-        ''' Create the top frame with date selection '''
-        top_frame = self.cw.create_frame(
-            self,
-            "TFrame",
-            0,
-            0,
-            pady=10
-        )
+        """
+        Create the top frame with the calendar widgets.
+        """
+        top_frame = self.frame_factory.create(
+            self, "TFrame", { 'row': 0, 'column': 0}, pady=10)
 
-        self.cw.create_label(
-            top_frame,
-            "Desde",
-            "Project_Label_Title_2.TLabel",
+        self.label_factory.create(
+            top_frame, "Desde", "Project_Label_Title_2.TLabel",
             { 'row': 0, 'column': 0, 'padx': 20})
 
-        self.cw.create_label(
-            top_frame,
-            "Hasta",
-            "Project_Label_Title_2.TLabel",
+        self.label_factory.create(
+            top_frame, "Hasta", "Project_Label_Title_2.TLabel",
             { 'row': 0, 'column': 2, 'padx': 20})
 
         locale.setlocale(locale.LC_TIME, 'es_ES')
@@ -82,8 +91,13 @@ class ReportWindow(tk.Frame):
         self.config['calendar_start'] = self.create_calendar(top_frame, 0, 1)
         self.config['calendar_end'] = self.create_calendar(top_frame, 0, 3)
 
-        self.config['generate_report'] = self.add_button(
-            top_frame, "Generar reporte", 0, 4)
+        self.config['generate_report'] = self.button_factory.create(
+            top_frame, {'text': 'Reporte SAP', 'style': 'TProject.TButton',
+            'grid_options': {'row': 0, 'column': 5}})
+
+        self.config['generate_normal_report'] = self.button_factory.create(
+            top_frame, {'text': 'Reporte por pieza', 'style': 'TProject.TButton',
+            'grid_options': {'row': 0, 'column': 4}})
 
     def create_calendar(self, parent, row, column):
         ''' Create a DateEntry calendar widget '''
@@ -98,20 +112,11 @@ class ReportWindow(tk.Frame):
 
     def create_middle_frame(self):
         ''' Create the middle frame with the table '''
-        middle_frame = self.cw.create_frame(
-            self,
-            "Test.TFrame",
-            1,
-            0,
-            sticky="nsew"
-        )
+        middle_frame = self.frame_factory.create(
+            self, "TFrame", { 'row': 1, 'column': 0, 'sticky': "nsew" })
 
-        self.cw.configure_grid(
-                middle_frame,
-                1,
-                1,
-                { 'row_weights': [1], 'col_weights': [1]}
-            )
+        self.grid_configurator.configure(
+            middle_frame, 1, 1, { 'row_weights': [1], 'col_weights': [1]})
 
         columns = ["ID", "Fecha", "Descripción", "Peso total", "Costo"]
 
@@ -124,7 +129,7 @@ class ReportWindow(tk.Frame):
         for col in columns:
             self.tree.heading(col, text=col.replace("_", " ").title())
 
-        self.tree.column(2, width=250)
+        self.tree.column(1, width=250)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
         # Add a menu
@@ -141,19 +146,6 @@ class ReportWindow(tk.Frame):
         )
 
         self.menu.add_command(label="Eliminar")
-
-    def add_button(self, parent, text, row, column):
-        ''' Add a button to the specified parent '''
-        button_result = ttk.Button(
-            parent,
-            text=text,
-            style="TProject.TButton"
-        )
-        button_result.grid(
-            row=row,
-            column=column,
-            sticky="we")
-        return button_result
 
     def show_error_message(self, message):
         ''' Show an error message '''
