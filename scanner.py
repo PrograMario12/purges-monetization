@@ -45,10 +45,11 @@ class Scanner:
 
     def get_values(self, data):
         ''' This function returns the values of a QR code.'''
-        return [
+        values = [
             value.replace('kg', '').strip().replace('Ñ', ':').replace('-', '/')
             for value in data.split(',')
         ]
+        return values[:-1]
 
     def add_price(self, values):
         '''
